@@ -26,28 +26,20 @@ void scene_structure::initialize()
 
 	skybox.initialize_data_on_gpu();
 	skybox.texture.initialize_cubemap_on_gpu(image_grid[1], image_grid[7], image_grid[5], image_grid[3], image_grid[10], image_grid[4]);
-	
-	// skybox.texture.initialize_cubemap_on_gpu(
-	// 	image_grid[1], //left face
-	// 	image_grid[7], // right face
-	// 	image_grid[4], // back face
-	// 	image_grid[10], // front face
-	// 	image_grid[3], // bottom face
-	// 	image_grid[5] // top face
-	// );
+
 
 
 	// terrain
 
 	ground.initialize_data_on_gpu(mesh_primitive_quadrangle({ -1.0f, 0.0f, -1.0f }, { -1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, -1.0f }));
-ground.model.scaling = 50.0f;
-ground.model.translation = { 0.0f, 0.0f, 0.0f }; // No translation needed for y-axis up
-ground.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/checkboard.png");
+	ground.model.scaling = 50.0f;
+	ground.model.translation = { 0.0f, 0.0f, 0.0f }; // No translation needed for y-axis up
+	ground.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/checkboard.png");
 
-// Define cylinder geometry with y-axis up
-cylinder.initialize_data_on_gpu(mesh_primitive_cylinder(0.05f, { 0, -1.0f, 0 }, { 0, 1.0f, 0 }));
+	// Define cylinder geometry with y-axis up
+	cylinder.initialize_data_on_gpu(mesh_primitive_cylinder(0.05f, { 0, -1.0f, 0 }, { 0, 1.0f, 0 }));
 
-	gui.display_frame = true;
+		gui.display_frame = true;
 
 
 
@@ -101,6 +93,10 @@ void scene_structure::display_frame()
 
 	if (gui.display_wireframe)
 		draw_wireframe(ground, environment);
+
+
+    glClear(GL_DEPTH_BUFFER_BIT);
+	this_player.draw(environment, gui.display_wireframe);
 }
 
 void scene_structure::display_gui()

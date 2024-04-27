@@ -6,6 +6,17 @@ player::player(
     vec3 _position, 
     camera_controller_first_person_euler& _camera
 ){
+    
+    weapon.initialize_data_on_gpu(
+        mesh_load_file_obj("assets/Ak_47/Ak-47.obj")
+    );
+
+    // weapon.initialize_data_on_gpu(
+    //     mesh_load_file_obj("assets/M9.obj")
+    // );
+
+    weapon.material.color = 0.3f * vec3{1, 1, 1};
+
     velocity = constants::MAX_VELOCITY;
     player_direction = {0,0,0};
 
@@ -32,10 +43,10 @@ player::player(){}
  * @return A new 3D vector with the z-component removed and normalized.
  */
 vec3 player::remove_y_direction(vec3 v){
-    vec3 v_without_z = mat3{{1,0,0},{0,0,0}, {0,0,1}} * v;
-    if (norm(v_without_z) < 1e-3)
+    vec3 v_without_y = mat3{{1,0,0},{0,0,0}, {0,0,1}} * v;
+    if (norm(v_without_y) < 1e-3)
         return {0,0,0};
-    return normalize(v_without_z);
+    return normalize(v_without_y);
 }
 
 void player::move(){
@@ -68,4 +79,26 @@ void player::move(){
     camera_position+= direction;
 
     camera->camera_model.position_camera = camera_position;
+}
+
+void player::draw(
+    const environment_structure& env, 
+    bool wireframe
+){
+    weapon.model.translation = camera->camera_model.position() - vec3{-0.15,0.6,0};
+
+    vec3 e1 = normalize(vec3{-1,0,0});
+    weapon.model.rotation = rotation_transform::from_frame_transform(
+        e1, 
+        {0,1,0}, 
+        camera->camera_model.front(), 
+        camera->camera_model.up()
+    );
+    
+    weapon.model.set_scaling(5e-3f);
+    if (wireframe)
+        draw_wireframe(weapon, env);
+
+    else
+        cgp::draw(weapon, env);
 }

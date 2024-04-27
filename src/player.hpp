@@ -11,6 +11,7 @@ class player{
 
         float velocity;
 
+        mesh_drawable weapon;
 
         vec3 player_direction;
         vec3 camera_position;
@@ -20,6 +21,8 @@ class player{
         player();
 
         void move();
+
+        void draw(const environment_structure& env, bool wireframe);
 
     private:
         vec3 remove_y_direction(vec3 v);
