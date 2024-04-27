@@ -85,15 +85,15 @@ void player::draw(
     const environment_structure& env, 
     bool wireframe
 ){
-    weapon.model.translation = camera->camera_model.position() - vec3{-0.15,0.6,0};
 
     vec3 e1 = normalize(vec3{-1,0,0});
     weapon.model.rotation = rotation_transform::from_frame_transform(
         e1, 
-        {0,1,0}, 
+        {0,0,1}, 
         camera->camera_model.front(), 
-        camera->camera_model.up()
+        -camera->camera_model.right()
     );
+    weapon.model.translation = camera->camera_model.position() - 0.6 * camera->camera_model.up() + 0.1 * camera->camera_model.right();//- vec3{-0.15,0.6,0};
     
     weapon.model.set_scaling(5e-3f);
     if (wireframe)
