@@ -216,7 +216,7 @@ window_structure standard_window_initialization()
 	glfwSetWindowSizeCallback(window.glfw_window, window_size_callback);  // Event called when the window is rescaled        
 	glfwSetKeyCallback(window.glfw_window, keyboard_callback);            // Event called when a keyboard touch is pressed/released
 	glfwSetScrollCallback(window.glfw_window, mouse_scroll_callback);     // Event called when scrolling the mouse
-
+	
 	return window;
 }
 
@@ -233,6 +233,7 @@ void window_size_callback(GLFWwindow*, int width, int height)
 // This function is called everytime the mouse is moved
 void mouse_move_callback(GLFWwindow* /*window*/, double xpos, double ypos)
 {
+	
 	vec2 const pos_relative = scene.window.convert_pixel_to_relative_coordinates({ xpos, ypos });
 	scene.inputs.mouse.position.update(pos_relative);
 	scene.mouse_move_event();

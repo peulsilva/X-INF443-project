@@ -3,12 +3,12 @@
 {
 	"folders": [
 		{
-			"name": "Scene-project",
+			"name": "Scene-02_camera_2d_displacement",
 			"path": "."
 		},
 		{
 			"name": "cgp",
-			"path": "../../cgp/library/",
+			"path": "../../../cgp/library/",
 		}
 	],
 
@@ -21,8 +21,8 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"name": "C++ Run",
-			"program": "${workspaceFolder:Scene-project}/build/project",
-			"cwd": "${workspaceFolder:Scene-project}",
+			"program": "${workspaceFolder:Scene-02_camera_2d_displacement}/build/02_camera_2d_displacement",
+			"cwd": "${workspaceFolder:Scene-02_camera_2d_displacement}",
 			"linux": {
 				"MIMode": "gdb"
 			},
