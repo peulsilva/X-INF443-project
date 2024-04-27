@@ -9,22 +9,45 @@ using namespace cgp;
 void scene_structure::initialize()
 {
 	camera_control.initialize(inputs, window); // Give access to the inputs and window global state to the camera controler
-	camera_control.set_rotation_axis_z();
+	camera_control.set_rotation_axis_y();
 	display_info();
+
+	// player
 	
 	this_player = player(vec3{0,0,0,}, camera_control);
 
 	global_frame.initialize_data_on_gpu(mesh_primitive_frame());
 
-	ground.initialize_data_on_gpu(mesh_primitive_quadrangle({ -1.0f,-1.0,0.0f }, {-1.0f,1.0f , 0.f}, { 1.0f,1.0f, 0.0f}, { 1.0f,-1.0f, 0.f }));
-	ground.model.scaling = 50.0f;
-	ground.model.translation = { 0.0f, -0.5f, 0.0f };
-	ground.texture.load_and_initialize_texture_2d_on_gpu(project::path+"assets/checkboard.png");
+	// skybox
 
-	cylinder.initialize_data_on_gpu(mesh_primitive_cylinder(0.05f, { 0,0,0 }, { 0,0,2. }));
+	image_structure image_skybox = image_load_file("assets/skybox_02.jpg");
+
+	std::vector<image_structure> image_grid = image_split_grid(image_skybox, 4, 3);
+
+	skybox.initialize_data_on_gpu();
+	skybox.texture.initialize_cubemap_on_gpu(image_grid[1], image_grid[7], image_grid[5], image_grid[3], image_grid[10], image_grid[4]);
+	
+	// skybox.texture.initialize_cubemap_on_gpu(
+	// 	image_grid[1], //left face
+	// 	image_grid[7], // right face
+	// 	image_grid[4], // back face
+	// 	image_grid[10], // front face
+	// 	image_grid[3], // bottom face
+	// 	image_grid[5] // top face
+	// );
 
 
-	gui.display_frame = false;
+	// terrain
+
+	ground.initialize_data_on_gpu(mesh_primitive_quadrangle({ -1.0f, 0.0f, -1.0f }, { -1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, -1.0f }));
+ground.model.scaling = 50.0f;
+ground.model.translation = { 0.0f, 0.0f, 0.0f }; // No translation needed for y-axis up
+ground.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/checkboard.png");
+
+// Define cylinder geometry with y-axis up
+cylinder.initialize_data_on_gpu(mesh_primitive_cylinder(0.05f, { 0, -1.0f, 0 }, { 0, 1.0f, 0 }));
+
+	gui.display_frame = true;
 
 
 
@@ -54,18 +77,28 @@ void scene_structure::display_frame()
 		draw(global_frame, environment);
 
 	
+	glDisable(GL_DEPTH_TEST) ;
+	
+	
+    draw(skybox, environment);
 
-	draw(ground, environment);
-	for (int kx = -20; kx < 20; kx+=2) {
-		for (int ky = -20; ky < 20; ky+=2) {
-			if (kx != 0 || ky != 0) {
-				cylinder.model.translation = { kx, ky , -0.05f};
+	glEnable(GL_DEPTH_TEST);
+
+	for (int kx = -20; kx < 20; kx += 2) {
+		for (int kz = -20; kz < 20; kz += 2) {
+			if (kx != 0 || kz != 0) {
+				// Adjust translation vector to have y-coordinate
+				cylinder.model.translation = { kx, 0.0f, kz };
 				draw(cylinder, environment);
 				if (gui.display_wireframe)
 					draw_wireframe(cylinder, environment);
 			}
 		}
 	}
+
+
+	draw(ground, environment);
+
 	if (gui.display_wireframe)
 		draw_wireframe(ground, environment);
 }

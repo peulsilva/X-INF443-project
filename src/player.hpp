@@ -22,5 +22,5 @@ class player{
         void move();
 
     private:
-        vec3 remove_z_direction(vec3 v);
+        vec3 remove_y_direction(vec3 v);
 };

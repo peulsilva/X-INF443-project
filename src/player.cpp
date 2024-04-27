@@ -12,7 +12,7 @@ player::player(
     position = _position;
     camera = &_camera;
 
-    camera_position = _position += vec3{0,0, 1.5};
+    camera_position = _position += vec3{0,1.5,0};
 
     camera->camera_model.position_camera = camera_position;
 }
@@ -31,8 +31,8 @@ player::player(){}
  * @param v The input 3D vector to remove the z-direction from.
  * @return A new 3D vector with the z-component removed and normalized.
  */
-vec3 player::remove_z_direction(vec3 v){
-    vec3 v_without_z = mat3{{1,0,0},{0,1,0}, {0,0,0}} * v;
+vec3 player::remove_y_direction(vec3 v){
+    vec3 v_without_z = mat3{{1,0,0},{0,0,0}, {0,0,1}} * v;
     if (norm(v_without_z) < 1e-3)
         return {0,0,0};
     return normalize(v_without_z);
@@ -48,19 +48,19 @@ void player::move(){
     vec3 direction = {0,0,0};
 
     if (inputs->keyboard.is_pressed(GLFW_KEY_A)){
-        direction -= delta_s * remove_z_direction(camera->camera_model.right());
+        direction -= delta_s * remove_y_direction(camera->camera_model.right());
     }
 
     if (inputs->keyboard.is_pressed(GLFW_KEY_D)){
-        direction += delta_s * remove_z_direction(camera->camera_model.right());
+        direction += delta_s * remove_y_direction(camera->camera_model.right());
     }
     
     if (inputs->keyboard.is_pressed(GLFW_KEY_W)){
-        direction += delta_s* remove_z_direction(camera->camera_model.front());
+        direction += delta_s* remove_y_direction(camera->camera_model.front());
     }
     
     if (inputs->keyboard.is_pressed(GLFW_KEY_S)){
-        direction -= delta_s * remove_z_direction(camera->camera_model.front());
+        direction -= delta_s * remove_y_direction(camera->camera_model.front());
     }
 
 

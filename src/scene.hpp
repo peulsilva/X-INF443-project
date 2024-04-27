@@ -43,6 +43,7 @@ struct scene_structure : cgp::scene_inputs_generic {
 
 	mesh_drawable ground;
 	mesh_drawable cylinder;
+	skybox_drawable skybox;
 
 	player this_player;
 
