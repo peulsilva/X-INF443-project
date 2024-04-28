@@ -23,13 +23,17 @@ void zombie::walk(
 	vec3 player_position
 )
 {   
-    
+    int rotate = 1;
 	// Calculate direction from zombie to player
 	vec3 forward_direction = vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));
 	vec3 zombie_to_player = (player_position - position) - forward_direction;
 
 	// Normalize the direction vector
 	vec3 zombie_to_player_normalized = utils::remove_y_direction(zombie_to_player);
+
+    if (norm(player_position - position + vec3{0,1,0}) < 2){
+        rotate = 0;
+    } 
 
 	// Calculate the angle between the forward direction of the zombie and the direction to the player
 	float angle = acos(zombie_to_player_normalized.z);
@@ -39,7 +43,7 @@ void zombie::walk(
 		angle *= -1; 
 
 	// Adjust the angle gradually to smoothly turn towards the player
-	float angleSpeed = 0.1f;
+	float angleSpeed = 0.1f * rotate;
 
 	if (abs(angle - effect_walking.root_angle) > angleSpeed) {
 		float rotation_dir = angle - effect_walking.root_angle > 0.0f ? 1.0f : -1.0f;
