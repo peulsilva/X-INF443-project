@@ -2,6 +2,7 @@
 #include "cgp/cgp.hpp"
 #include "camera.hpp"
 #include "utils.hpp"
+#include "zombie.hpp"
 
 using namespace cgp;
 
@@ -17,9 +18,11 @@ class player{
         vec3 player_direction;
         vec3 camera_position;
 
+        std::map<std::string, zombie>* zombies;
+
         bool is_aiming;
 
-        player(vec3 _position, camera_controller_first_person_euler& _camera);
+        player(vec3 _position, camera_controller_first_person_euler& _camera, std::map<std::string, zombie>& _zombies);
 
         player();
 
@@ -28,6 +31,8 @@ class player{
         void draw(const environment_structure& env, bool wireframe);
 
         void handle_mouse_click();
+
+        vec3 looking_at();
 
     private:
         vec3 remove_y_direction(vec3 v);

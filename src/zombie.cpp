@@ -1,10 +1,13 @@
 #include "zombie.hpp"
+#include "constants.hpp"
 using namespace cgp;
 
 zombie::zombie(vec3 _position){
     position = _position;
 
+	speed = constants::ENEMY_SPEED;
     character = load_character_zombie();
+	character.set_current_animation("Walk");
     effect_walking.root_position = position + vec3{0,1,0};
 	
 }
@@ -16,13 +19,52 @@ zombie::zombie(const zombie& other) {
 
 }
 
+vec3 zombie::looking_at(){
+	return vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));
+}
+
 
 zombie::zombie(){}
+
+void zombie::get_shot(){
+	if (!is_alive)
+		return;
+	is_alive = false;
+	character.set_current_animation("Death");   
+	character.timer.t_periodic = 0;
+
+	
+	rotation_transform r = rotation_axis_angle(vec3(0.0f, 1.0f, 0.0f), effect_walking.root_angle);
+
+	character.animated_model.apply_transformation({0,0,0},r );
+}
 
 void zombie::walk(
 	vec3 player_position
 )
 {   
+	if (!is_alive){
+
+		vec3 forward_direction = vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));
+		// rotation_transform r = rotation_axis_angle(vec3(0.0f, 1.0f, 0.0f), effect_walking.root_angle);
+
+		// character.animated_model.apply_transformation({0,0,0},r );
+		
+
+		character.animated_model.skeleton.joint_matrix_global[0].apply_translation({position.x,0,position.z});
+		
+
+		if (character.timer.t_periodic > character.timer.event_period -0.02)
+			display_death_animation = false;
+		
+		for (unsigned int i = 1; i <  character.animated_model.skeleton.joint_matrix_local.size(); i++)
+		{
+			int parent_index = character.animated_model.skeleton.parent_index[i];
+			character.animated_model.skeleton.joint_matrix_global[i] = character.animated_model.skeleton.joint_matrix_global[parent_index] * character.animated_model.skeleton.joint_matrix_local[i];
+		}
+		character.animated_model.skeleton.update_joint_matrix_global_to_local();
+		return;
+	}
     int rotate = 1;
 	// Calculate direction from zombie to player
 	vec3 forward_direction = vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));

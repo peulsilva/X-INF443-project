@@ -32,9 +32,9 @@ void init_sound_effects(){
 
 void init_sfx(const char* wav_path, int duration_ms, bool* listener, bool on_repeat) {
     for(;;){
-        #ifdef _WIN32
-            std::cout << std::endl; // dont know why but this is needed to make audio run on windows ...
-        #endif //_WIN32
+        // #ifdef _WIN32
+        std::cout << ""; // dont know why but this is needed to make audio run on windows ...
+        // #endif //_WIN32
 		if (!*listener) continue;
 		if (!on_repeat) *listener = false;
 
@@ -75,7 +75,7 @@ void init_sfx(const char* wav_path, int duration_ms, bool* listener, bool on_rep
  	   	std::this_thread::sleep_for(duration/4);
         ma_device_uninit(&device);
         ma_decoder_uninit(&decoder);
-        *listener = false;
+        if (!on_repeat) *listener = false;
 	}
 
     std::cout << "started sounds " << std::endl;
@@ -84,7 +84,6 @@ void init_sfx(const char* wav_path, int duration_ms, bool* listener, bool on_rep
 
 void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
 {
-    std::cout << "shoot" << std::endl;
     ma_decoder* pDecoder = (ma_decoder*)pDevice->pUserData;
     if (pDecoder == NULL) {
         

@@ -13,7 +13,8 @@ void scene_structure::initialize()
 
 	// player
 	
-	this_player = player(vec3{0,0,0,}, camera_control);
+	this_player = player(vec3{0,0,0,}, camera_control, zombies);
+
 
 	global_frame.initialize_data_on_gpu(mesh_primitive_frame());
 
@@ -149,7 +150,13 @@ void scene_structure::animate_characters(){
 
 		// Default animation reading a standard animation cycle
 		if(transition.active==false) {
-			character.animated_model.set_skeleton_from_animation(character.current_animation_name, character.timer.t_periodic);
+			if (this_zombie.is_alive || this_zombie.display_death_animation){
+				character.animated_model.set_skeleton_from_animation(character.current_animation_name, character.timer.t_periodic);
+				
+			}
+			else{
+				continue;
+			}
 		}
 		// Currently with an active transition between two animations
 		else {

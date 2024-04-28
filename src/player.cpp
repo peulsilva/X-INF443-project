@@ -11,7 +11,8 @@ using namespace cgp;
 
 player::player(
     vec3 _position, 
-    camera_controller_first_person_euler& _camera
+    camera_controller_first_person_euler& _camera,
+    std::map<std::string, zombie>& _zombies
 ){
     
     weapon.initialize_data_on_gpu(
@@ -28,6 +29,8 @@ player::player(
 
     velocity = constants::MAX_VELOCITY;
     player_direction = {0,0,0};
+
+    zombies = &_zombies;
 
     position = _position;
     camera = &_camera;
@@ -85,6 +88,10 @@ void player::move(){
     camera->camera_model.position_camera = camera_position;
 }
 
+vec3 player::looking_at(){
+    return camera->camera_model.front();
+}
+
 void player::draw(
     const environment_structure& env, 
     bool wireframe
@@ -123,5 +130,22 @@ void player::handle_mouse_click(){
 
     if (click_left){
         lists.shoot = true; 
+        for (auto&[name, _zombie]: *zombies){
+
+            // checking horizontal hit 
+            vec3 v1 = utils::remove_y_direction(_zombie.position - position);
+            vec3 v2 = utils::remove_y_direction(looking_at());
+            float dist = norm(_zombie.position - position);
+            float angle = acos(dot(v1, v2)) * 180/ constants::PI;
+            // std::cout << "zombie " <<name << " position " << _zombie.position << " player " << position << " looking at " << looking_at()<< std::endl;
+            std::cout << angle << " distance " << 10/dist <<std:: endl;
+            if (angle < 10/dist){
+                std::cout << "hit" << std::endl;
+                _zombie.get_shot(); 
+            }
+
+            // TODO: check vertical hit 
+        }
+        
     }
 }
