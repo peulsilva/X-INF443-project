@@ -10,6 +10,7 @@ struct listeners {
     bool background_creative = false;
     bool death = false;
     bool place_block = false;
+    bool footsteps = false;
 };
 
 extern listeners lists;

@@ -81,7 +81,12 @@ void player::move(){
         direction -= delta_s * utils::remove_y_direction(camera->camera_model.front());
     }
 
-
+    if (norm(direction) > 0){
+        lists.footsteps = true;
+    }
+    else{
+        lists.footsteps = false;
+    }
     position += direction;
     camera_position+= direction;
 
@@ -138,9 +143,9 @@ void player::handle_mouse_click(){
             float dist = norm(_zombie.position - position);
             float angle = acos(dot(v1, v2)) * 180/ constants::PI;
             // std::cout << "zombie " <<name << " position " << _zombie.position << " player " << position << " looking at " << looking_at()<< std::endl;
-            std::cout << angle << " distance " << 10/dist <<std:: endl;
+            // std::cout << angle << " distance " << 10/dist <<std:: endl;
             if (angle < 10/dist){
-                std::cout << "hit" << std::endl;
+                // std::cout << "hit" << std::endl;
                 _zombie.get_shot(); 
             }
 

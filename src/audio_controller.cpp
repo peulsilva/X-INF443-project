@@ -11,6 +11,10 @@ void init_sound_effects(){
 	std::thread rifle_shot(init_sfx, "assets/audio/ak-47-89833.wav", 2000, &(lists.shoot), false);
 	rifle_shot.detach();
 
+    std::thread footsteps(init_sfx, "assets/audio/concrete-footsteps-6752.mp3", 2000, &(lists.footsteps), false);
+	footsteps.detach();
+
+
     // std::thread hit(init_sfx, "../assets/bullet_hit.wav", 100, &(lists.hit), false);
 	// hit.detach();
 

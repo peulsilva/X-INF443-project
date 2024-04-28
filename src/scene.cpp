@@ -36,16 +36,15 @@ void scene_structure::initialize()
 	ground.model.translation = { 0.0f, 0.0f, 0.0f }; // No translation needed for y-axis up
 	ground.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/checkboard.png");
 
-	// Define cylinder geometry with y-axis up
-	cylinder.initialize_data_on_gpu(mesh_primitive_cylinder(0.05f, { 0, -1.0f, 0 }, { 0, 1.0f, 0 }));
 
-		gui.display_frame = true;
+	gui.display_frame = true;
 
 
 	// zombie
 	zombies["1"] = zombie(vec3{20,0,0});
 	zombies["2"] = zombie(vec3{-20,0,0});
-	// characters["1"].set_current_animation("walk");
+	zombies["3"] = zombie(vec3{-15,0,14});
+	zombies["4"] = zombie(vec3{15,0,14});
 	
 	current_active_zombie = "1";
 
@@ -84,18 +83,6 @@ void scene_structure::display_frame()
     draw(skybox, environment);
 
 	glEnable(GL_DEPTH_TEST);
-
-	for (int kx = -20; kx < 20; kx += 2) {
-		for (int kz = -20; kz < 20; kz += 2) {
-			if (kx != 0 || kz != 0) {
-				// Adjust translation vector to have y-coordinate
-				cylinder.model.translation = { kx, 0.0f, kz };
-				draw(cylinder, environment);
-				if (gui.display_wireframe)
-					draw_wireframe(cylinder, environment);
-			}
-		}
-	}
 
 	draw(ground, environment);
 
