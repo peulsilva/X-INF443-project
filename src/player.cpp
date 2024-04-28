@@ -15,6 +15,8 @@ player::player(
     //     mesh_load_file_obj("assets/M9.obj")
     // );
 
+    is_aiming = false;
+
     weapon.material.color = 0.3f * vec3{1, 1, 1};
 
     velocity = constants::MAX_VELOCITY;
@@ -42,12 +44,7 @@ player::player(){}
  * @param v The input 3D vector to remove the z-direction from.
  * @return A new 3D vector with the z-component removed and normalized.
  */
-vec3 player::remove_y_direction(vec3 v){
-    vec3 v_without_y = mat3{{1,0,0},{0,0,0}, {0,0,1}} * v;
-    if (norm(v_without_y) < 1e-3)
-        return {0,0,0};
-    return normalize(v_without_y);
-}
+
 
 void player::move(){
     auto& inputs = camera->inputs;
@@ -59,19 +56,19 @@ void player::move(){
     vec3 direction = {0,0,0};
 
     if (inputs->keyboard.is_pressed(GLFW_KEY_A)){
-        direction -= delta_s * remove_y_direction(camera->camera_model.right());
+        direction -= delta_s * utils::remove_y_direction(camera->camera_model.right());
     }
 
     if (inputs->keyboard.is_pressed(GLFW_KEY_D)){
-        direction += delta_s * remove_y_direction(camera->camera_model.right());
+        direction += delta_s * utils::remove_y_direction(camera->camera_model.right());
     }
     
     if (inputs->keyboard.is_pressed(GLFW_KEY_W)){
-        direction += delta_s* remove_y_direction(camera->camera_model.front());
+        direction += delta_s* utils::remove_y_direction(camera->camera_model.front());
     }
     
     if (inputs->keyboard.is_pressed(GLFW_KEY_S)){
-        direction -= delta_s * remove_y_direction(camera->camera_model.front());
+        direction -= delta_s * utils::remove_y_direction(camera->camera_model.front());
     }
 
 
@@ -93,7 +90,10 @@ void player::draw(
         camera->camera_model.front(), 
         -camera->camera_model.right()
     );
-    weapon.model.translation = camera->camera_model.position() - 0.6 * camera->camera_model.up() + 0.1 * camera->camera_model.right();//- vec3{-0.15,0.6,0};
+    
+    weapon.model.translation = !is_aiming ? 
+        camera->camera_model.position() - 0.6 * camera->camera_model.up() + 0.1 * camera->camera_model.right()
+        : camera->camera_model.position() - 0.57 * camera->camera_model.up() +  0.03 * camera->camera_model.right();
     
     weapon.model.set_scaling(5e-3f);
     if (wireframe)
@@ -101,4 +101,16 @@ void player::draw(
 
     else
         cgp::draw(weapon, env);
+}
+
+void player::handle_mouse_click(){
+    auto& inputs = camera->inputs;
+    bool const click_right = inputs->mouse.click.right;
+    bool const click_left = inputs->mouse.click.left;
+
+    if (click_right)
+        is_aiming = true;
+
+    else
+        is_aiming = false;
 }

@@ -1,10 +1,8 @@
 #include "scene.hpp"
 
-
 using namespace cgp;
 
-
-
+#include "character_loader/character_loader.hpp"
 
 void scene_structure::initialize()
 {
@@ -42,6 +40,14 @@ void scene_structure::initialize()
 		gui.display_frame = true;
 
 
+	// zombie
+	zombies["1"] = zombie(vec3{30,0,0});
+	// characters["1"].set_current_animation("walk");
+	
+	current_active_zombie = "1";
+
+	for(auto& entry : zombies)
+		entry.second.character.timer.start();
 
 }
 
@@ -88,12 +94,12 @@ void scene_structure::display_frame()
 		}
 	}
 
-
 	draw(ground, environment);
 
 	if (gui.display_wireframe)
 		draw_wireframe(ground, environment);
 
+	animate_characters();
 
     glClear(GL_DEPTH_BUFFER_BIT);
 	this_player.draw(environment, gui.display_wireframe);
@@ -111,6 +117,7 @@ void scene_structure::mouse_move_event()
 }
 void scene_structure::mouse_click_event()
 {
+	this_player.handle_mouse_click();
 	camera_control.action_mouse_click(environment.camera_view);
 }
 void scene_structure::keyboard_event()
@@ -121,7 +128,93 @@ void scene_structure::keyboard_event()
 }
 void scene_structure::idle_frame()
 {
+	this_player.handle_mouse_click();
 	this_player.move();
 	camera_control.idle_frame(environment.camera_view);
 }
 
+void scene_structure::animate_characters(){
+	for(auto& [name, zombie]: zombies) {
+		zombie.character.timer.update();
+	}
+
+	// ************************************************* //
+	// Update the current skeleton of each character
+	// ************************************************* //
+	for(auto& [name, this_zombie] : zombies) {
+		character_structure& character = this_zombie.character;
+		effect_transition_structure& transition = effect_transition[name];
+
+		// Default animation reading a standard animation cycle
+		if(transition.active==false) {
+			character.animated_model.set_skeleton_from_animation(character.current_animation_name, character.timer.t_periodic);
+		}
+		// Currently with an active transition between two animations
+		else {
+			effect_transition_compute(transition, character);
+			effect_transition_stop_if_completed(transition, character);
+		}
+		this_zombie.walk(this_player.position);
+	}
+
+	// ********************************** //
+	// Apply effects on the skeleton
+	// ********************************** //
+
+	// Apply the walk effect if activated
+
+	zombies[current_active_zombie].character.animated_model.apply_transformation({0,1,0});
+	// Apply the head rotation effect if activated
+	// if(gui.rotate_head_effect_active) {
+	// 	for(auto& entry_character : characters) {
+	// 		effect_rotate_head_toward_objective_position(entry_character.second.animated_model.skeleton, 10, camera_control.camera_model.position());
+	// 	}
+	// }
+
+
+	// ********************************** //
+	// Compute Skinning deformation
+	// ********************************** //
+	for(auto& [name, zombie] : zombies) {
+		animated_model_structure& animated_model = zombie.character.animated_model;
+		for(auto& rigged_mesh_entry : animated_model.rigged_mesh) {
+			std::string mesh_name = rigged_mesh_entry.first;
+			animated_model.skinning_lbs(mesh_name);
+		}
+	}
+
+	// ************************************** //
+	// Display the surface and the skeletons
+	// ************************************** //
+	for(auto& [name, zombie] : zombies) {
+		character_structure& character = zombie.character;
+		animated_model_structure& animated_model = zombie.character.animated_model;
+
+		// Display meshes
+		for(auto& rigged_mesh_entry : animated_model.rigged_mesh) {
+			std::string mesh_name = rigged_mesh_entry.first;
+			rigged_mesh_structure& rigged_mesh = rigged_mesh_entry.second;
+			
+			mesh_drawable& drawable = character.drawable[mesh_name];
+			drawable.vbo_position.update(rigged_mesh.mesh_deformed.position);
+			drawable.vbo_normal.update(rigged_mesh.mesh_deformed.normal);
+
+			// if(gui.display_surface) {
+			draw(drawable, environment);
+			// }
+			if(gui.display_wireframe) {
+				draw_wireframe(drawable, environment);
+			}
+		}
+
+		// Display skeleton
+		// if(gui.display_skeleton) {
+		// 	character.sk_drawable.update(animated_model.skeleton);
+		// 	character.sk_drawable.display_joint_frame = gui.display_skeleton_joint_frame;
+		// 	character.sk_drawable.display_joint_sphere = gui.display_skeleton_joint_sphere;
+		// 	character.sk_drawable.display_segments = gui.display_skeleton_bone;
+		// 	draw(character.sk_drawable, environment);
+		// }
+
+	}
+}

@@ -5,6 +5,10 @@
 #include "environment.hpp"
 #include "camera.hpp"
 #include "player.hpp"
+#include "zombie.hpp"
+
+#include "animated_character/animated_character.hpp"
+#include "effects/effects.hpp"
 
 
 using cgp::mesh_drawable;
@@ -35,7 +39,13 @@ struct scene_structure : cgp::scene_inputs_generic {
 	// Special camera mode adapted to a 2D displacement mode
 	camera_controller camera_control;
 
-	
+	std::map<std::string, zombie> zombies;
+	std::string current_active_zombie;
+
+
+	std::map<std::string, effect_transition_structure> effect_transition;	
+	effect_walking_structure effect_walk;
+
 
 	// ****************************** //
 	// Elements and shapes of the scene
@@ -54,6 +64,7 @@ struct scene_structure : cgp::scene_inputs_generic {
 	void initialize();    // Standard initialization to be called before the animation loop
 	void display_frame(); // The frame display to be called within the animation loop
 	void display_gui();   // The display of the GUI, also called within the animation loop
+	void animate_characters();
 
 
 	void mouse_move_event();
