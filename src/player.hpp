@@ -1,7 +1,6 @@
 #pragma once
 #include "cgp/cgp.hpp"
 #include "camera.hpp"
-#include "constants.hpp"
 #include "utils.hpp"
 
 using namespace cgp;

@@ -1,5 +1,7 @@
 #include "player.hpp"
 
+#include "constants.hpp"
+
 using namespace cgp;
 
 player::player(

@@ -1,23 +1,29 @@
 #include "zombie.hpp"
-#include "utils.hpp"
-
 using namespace cgp;
 
 zombie::zombie(vec3 _position){
     position = _position;
 
     character = load_character_lola();
+    effect_walking.root_position = position + vec3{0,1,0};
 	
-    character.animated_model.apply_transformation(position);
 }
+
+zombie::zombie(const zombie& other) {
+    position = other.position;
+    character = other.character; // Assuming character_structure supports copy construction
+    // character.animated_model.apply_transformation(position);
+
+}
+
 
 zombie::zombie(){}
 
 void zombie::walk(
 	vec3 player_position
 )
-{
-
+{   
+    
 	// Calculate direction from zombie to player
 	vec3 forward_direction = vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));
 	vec3 zombie_to_player = (player_position - position) - forward_direction;
@@ -42,7 +48,7 @@ void zombie::walk(
 		effect_walking.root_angle = angle; // Align directly if close enough
 	}
 
-	float speed = 0.02f;
+	
 	forward_direction = vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));
 	vec3 delta_position = forward_direction * speed;
 	effect_walking.root_position += delta_position;
@@ -63,4 +69,5 @@ void zombie::walk(
 		character.animated_model.skeleton.joint_matrix_global[i] = character.animated_model.skeleton.joint_matrix_global[parent_index] * character.animated_model.skeleton.joint_matrix_local[i];
 	}
 	character.animated_model.skeleton.update_joint_matrix_global_to_local();
+
 }

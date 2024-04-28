@@ -41,7 +41,8 @@ void scene_structure::initialize()
 
 
 	// zombie
-	zombies["1"] = zombie(vec3{30,0,0});
+	zombies["1"] = zombie(vec3{20,0,0});
+	zombies["2"] = zombie(vec3{-20,0,0});
 	// characters["1"].set_current_animation("walk");
 	
 	current_active_zombie = "1";
@@ -163,7 +164,7 @@ void scene_structure::animate_characters(){
 
 	// Apply the walk effect if activated
 
-	zombies[current_active_zombie].character.animated_model.apply_transformation({0,1,0});
+	// zombies[current_active_zombie].character.animated_model.apply_transformation({0,1,0});
 	// Apply the head rotation effect if activated
 	// if(gui.rotate_head_effect_active) {
 	// 	for(auto& entry_character : characters) {
