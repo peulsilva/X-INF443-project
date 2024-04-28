@@ -4,7 +4,7 @@ using namespace cgp;
 zombie::zombie(vec3 _position){
     position = _position;
 
-    character = load_character_lola();
+    character = load_character_zombie();
     effect_walking.root_position = position + vec3{0,1,0};
 	
 }
