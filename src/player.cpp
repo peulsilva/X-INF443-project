@@ -1,7 +1,12 @@
 #include "player.hpp"
 
 #include "constants.hpp"
+#include "audio_controller.hpp"
 
+#include <future>
+#include <thread>
+#include <chrono>
+#include <iostream>
 using namespace cgp;
 
 player::player(
@@ -115,4 +120,8 @@ void player::handle_mouse_click(){
 
     else
         is_aiming = false;
+
+    if (click_left){
+        lists.shoot = true; 
+    }
 }

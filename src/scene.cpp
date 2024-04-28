@@ -1,4 +1,5 @@
 #include "scene.hpp"
+#include "audio_controller.hpp"
 
 using namespace cgp;
 

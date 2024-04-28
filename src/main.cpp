@@ -3,6 +3,7 @@
 #include "cgp/cgp.hpp" // Give access to the complete CGP library
 #include "environment.hpp" // The general scene environment + project variable
 #include <iostream> 
+#include "audio_controller.hpp"
 
 #include <chrono>
 #include <thread>
@@ -63,7 +64,8 @@ int main(int, char* argv[])
 	// ************************ //
 	std::cout << "Start animation loop ..." << std::endl;
 	fps_record.start();
-
+	
+	init_sound_effects();
 
 	// Call the main display loop in the function animation_loop
 	//  The following part is simply a loop that call the function "animation_loop"
