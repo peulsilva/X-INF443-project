@@ -66,6 +66,10 @@ void player::move(){
 
     vec3 direction = {0,0,0};
 
+    if (inputs->keyboard.is_pressed(GLFW_KEY_R)){
+        curr_weapon.reload();
+    }
+
     if (inputs->keyboard.is_pressed(GLFW_KEY_A)){
         direction -= delta_s * utils::remove_y_direction(camera->camera_model.right());
     }
@@ -168,10 +172,11 @@ vec3 player::collide_with_zombie(vec3 moving_direction){
         if (norm(d_ab) < 1.7){
             moving_direction = restrict_movement(_zombie.position, moving_direction);
 
-            if (timeout_counter > hit_timeout && _zombie.is_alive)
+            if (timeout_counter > hit_timeout && _zombie.is_alive){
                 take_hit();
 
-            timeout_counter = 0;
+                timeout_counter = 0;
+            }
         }
         
     }

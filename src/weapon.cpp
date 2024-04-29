@@ -21,8 +21,8 @@ weapon::weapon(weapon_type _type){
         object.material.color = 0.3f * vec3{1, 1, 1};
 
         bullets_in_clip = 30;
-        total_bullets = 120;
-        max_bullets_in_clip = total_bullets;
+        total_bullets = 60;
+        max_bullets_in_clip = bullets_in_clip;
     }
 
 }
@@ -40,12 +40,33 @@ bool weapon::shoot(){
             lists.shoot_rifle = true;
         }
 
-        std::cout << bullets_in_clip<< std::endl;
         bullets_in_clip-= 1;
 
         counter = 0;
         return true;
     }
+}
+
+void weapon::reload(){
+    if (bullets_in_clip == max_bullets_in_clip)
+        return;
+
+    if (total_bullets == 0)
+        return;
+
+    if (total_bullets > max_bullets_in_clip - bullets_in_clip){
+
+        total_bullets -= max_bullets_in_clip - bullets_in_clip;
+        bullets_in_clip = max_bullets_in_clip;
+    }
+
+    else if (total_bullets < max_bullets_in_clip - bullets_in_clip){
+        bullets_in_clip = bullets_in_clip + total_bullets;
+        total_bullets = 0;
+    }
+    counter = -30;
+
+    lists.reload = true;
 }
 
 void weapon::draw(

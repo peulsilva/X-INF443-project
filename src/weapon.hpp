@@ -32,7 +32,11 @@ class weapon{
         weapon();
 
         bool shoot();
+        void reload();
+
 
         void draw(const environment_structure& env, camera_controller_first_person_euler* camera, bool wireframe, bool is_aiming);
+
+
 
 };

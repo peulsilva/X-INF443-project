@@ -22,6 +22,9 @@ void init_sound_effects(){
 
     std::thread empty_clip(init_sfx, "assets/audio/rifle-clip-empty-98832.mp3", 500, &(lists.empty_clip), false);
 	empty_clip.detach();
+
+    std::thread reload(init_sfx, "assets/audio/machine-gun-reload-81593.mp3", 1000, &(lists.reload), false);
+	reload.detach();
     // std::thread hit(init_sfx, "../assets/bullet_hit.wav", 100, &(lists.hit), false);
 	// hit.detach();
 

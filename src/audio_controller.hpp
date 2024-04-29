@@ -5,6 +5,7 @@
 struct listeners {
     bool shoot_rifle = false;
     bool empty_clip = false;
+    bool reload = false;
     bool take_hit = false;
     bool footsteps = false;
     bool death = false;
