@@ -3,7 +3,8 @@
 #include <iostream>
 
 struct listeners {
-    bool shoot = false;
+    bool shoot_rifle = false;
+    bool empty_clip = false;
     bool take_hit = false;
     bool footsteps = false;
     bool death = false;

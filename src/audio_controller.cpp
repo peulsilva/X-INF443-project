@@ -8,7 +8,7 @@ listeners lists;
 void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
 
 void init_sound_effects(){
-	std::thread rifle_shot(init_sfx, "assets/audio/ak-47-89833.wav", 500, &(lists.shoot), false);
+	std::thread rifle_shot(init_sfx, "assets/audio/ak-47-89833.wav", 500, &(lists.shoot_rifle), false);
 	rifle_shot.detach();
 
     std::thread footsteps(init_sfx, "assets/audio/concrete-footsteps-6752.mp3", 500, &(lists.footsteps), false);
@@ -19,6 +19,9 @@ void init_sound_effects(){
 
     std::thread death(init_sfx, "assets/audio/alphascream001-98301.mp3", 1500, &(lists.death), false);
 	death.detach();
+
+    std::thread empty_clip(init_sfx, "assets/audio/rifle-clip-empty-98832.mp3", 500, &(lists.empty_clip), false);
+	empty_clip.detach();
     // std::thread hit(init_sfx, "../assets/bullet_hit.wav", 100, &(lists.hit), false);
 	// hit.detach();
 

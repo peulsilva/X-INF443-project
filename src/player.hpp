@@ -3,6 +3,7 @@
 #include "camera.hpp"
 #include "utils.hpp"
 #include "zombie.hpp"
+#include "weapon.hpp"
 
 using namespace cgp;
 
@@ -19,7 +20,8 @@ class player{
         int hit_timeout = 100;
         int timeout_counter = 0;
 
-        mesh_drawable weapon;
+        // mesh_drawable weapon;
+        weapon curr_weapon;
 
         vec3 player_direction;
         vec3 camera_position;

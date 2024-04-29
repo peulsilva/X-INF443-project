@@ -16,17 +16,11 @@ player::player(
     std::map<std::string, zombie>& _zombies
 ){
     
-    weapon.initialize_data_on_gpu(
-        mesh_load_file_obj("assets/Ak_47/Ak-47.obj")
-    );
-
-    // weapon.initialize_data_on_gpu(
-    //     mesh_load_file_obj("assets/M9.obj")
-    // );
+    curr_weapon = weapon(rifle);
 
     is_aiming = false;
 
-    weapon.material.color = 0.3f * vec3{1, 1, 1};
+    
 
     velocity = constants::MAX_VELOCITY;
     player_direction = {0,0,0};
@@ -111,24 +105,12 @@ void player::draw(
     bool wireframe
 ){
 
-    vec3 e1 = normalize(vec3{-1,0,0});
-    weapon.model.rotation = rotation_transform::from_frame_transform(
-        e1, 
-        {0,0,1}, 
-        camera->camera_model.front(), 
-        -camera->camera_model.right()
+    curr_weapon.draw(
+        env,
+        camera,
+        wireframe,
+        is_aiming
     );
-    
-    weapon.model.translation = !is_aiming ? 
-        camera->camera_model.position() - 0.6 * camera->camera_model.up() + 0.1 * camera->camera_model.right()
-        : camera->camera_model.position() - 0.57 * camera->camera_model.up() +  0.03 * camera->camera_model.right();
-    
-    weapon.model.set_scaling(5e-3f);
-    if (wireframe)
-        draw_wireframe(weapon, env);
-
-    else
-        cgp::draw(weapon, env);
 }
 
 void player::handle_mouse_click(){
@@ -143,20 +125,24 @@ void player::handle_mouse_click(){
         is_aiming = false;
 
     if (click_left){
-        lists.shoot = true; 
-        for (auto&[name, _zombie]: *zombies){
+        bool is_shot = curr_weapon.shoot();
 
-            // checking horizontal hit 
-            vec3 v1 = utils::remove_y_direction(_zombie.position - position);
-            vec3 v2 = utils::remove_y_direction(looking_at());
-            float dist = norm(_zombie.position - position);
-            float angle = acos(dot(v1, v2)) * 180/ constants::PI;
-            
-            if (angle < 10/dist){
-                _zombie.get_shot(); 
+        if (is_shot){
+
+            for (auto&[name, _zombie]: *zombies){
+
+                // checking horizontal hit 
+                vec3 v1 = utils::remove_y_direction(_zombie.position - position);
+                vec3 v2 = utils::remove_y_direction(looking_at());
+                float dist = norm(_zombie.position - position);
+                float angle = acos(dot(v1, v2)) * 180/ constants::PI;
+                
+                if (angle < 10/dist){
+                    _zombie.get_shot(); 
+                }
+
+                // TODO: check vertical hit 
             }
-
-            // TODO: check vertical hit 
         }
         
     }
@@ -182,7 +168,7 @@ vec3 player::collide_with_zombie(vec3 moving_direction){
         if (norm(d_ab) < 1.7){
             moving_direction = restrict_movement(_zombie.position, moving_direction);
 
-            if (timeout_counter > hit_timeout )
+            if (timeout_counter > hit_timeout && _zombie.is_alive)
                 take_hit();
 
             timeout_counter = 0;
