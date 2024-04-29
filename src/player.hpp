@@ -34,6 +34,10 @@ class player{
 
         vec3 looking_at();
 
+        vec3 collide_with_zombie(vec3 moving_direction);
+
+        vec3 restrict_movement(vec3 zombie_pos, vec3 moving_direction);
+
     private:
         vec3 remove_y_direction(vec3 v);
 };

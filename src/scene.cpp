@@ -150,7 +150,7 @@ void scene_structure::animate_characters(){
 			effect_transition_compute(transition, character);
 			effect_transition_stop_if_completed(transition, character);
 		}
-		this_zombie.walk(this_player.position);
+		this_zombie.move(this_player.position);
 	}
 
 	// ********************************** //

@@ -39,7 +39,7 @@ void zombie::get_shot(){
 	character.animated_model.apply_transformation({0,0,0},r );
 }
 
-void zombie::walk(
+void zombie::move(
 	vec3 player_position
 )
 {   
@@ -65,6 +65,7 @@ void zombie::walk(
 		character.animated_model.skeleton.update_joint_matrix_global_to_local();
 		return;
 	}
+
     int rotate = 1;
 	// Calculate direction from zombie to player
 	vec3 forward_direction = vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));
@@ -97,7 +98,9 @@ void zombie::walk(
 	
 	forward_direction = vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));
 	vec3 delta_position = forward_direction * speed;
-	effect_walking.root_position += delta_position;
+	
+	collide_with_player(player_position, delta_position);
+	
 	
 
 	
@@ -115,5 +118,20 @@ void zombie::walk(
 		character.animated_model.skeleton.joint_matrix_global[i] = character.animated_model.skeleton.joint_matrix_global[parent_index] * character.animated_model.skeleton.joint_matrix_local[i];
 	}
 	character.animated_model.skeleton.update_joint_matrix_global_to_local();
+
+}
+
+void zombie::collide_with_player(vec3 player_position, vec3 walking_position){
+	vec3 d_AB = player_position - position;
+
+	if (norm(d_AB) > 1.7){
+		effect_walking.root_position += walking_position;
+	}
+
+	// vec3 forward_direction = vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));
+
+	// decompose in perpendicular direction
+
+	// vec3 proj = dot(forward_direction, d_AB)* forward_direction;
 
 }

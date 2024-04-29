@@ -29,5 +29,7 @@ class zombie {
 
         zombie(const zombie& other);
 
-        void walk(vec3 player_position);
+        void move(vec3 player_position);
+
+        void collide_with_player(vec3 player_position, vec3 walking_position);
 };

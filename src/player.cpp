@@ -9,6 +9,7 @@
 #include <iostream>
 using namespace cgp;
 
+
 player::player(
     vec3 _position, 
     camera_controller_first_person_euler& _camera,
@@ -87,6 +88,8 @@ void player::move(){
     else{
         lists.footsteps = false;
     }
+
+    direction = collide_with_zombie(direction);
     position += direction;
     camera_position+= direction;
 
@@ -142,10 +145,8 @@ void player::handle_mouse_click(){
             vec3 v2 = utils::remove_y_direction(looking_at());
             float dist = norm(_zombie.position - position);
             float angle = acos(dot(v1, v2)) * 180/ constants::PI;
-            // std::cout << "zombie " <<name << " position " << _zombie.position << " player " << position << " looking at " << looking_at()<< std::endl;
-            // std::cout << angle << " distance " << 10/dist <<std:: endl;
+            
             if (angle < 10/dist){
-                // std::cout << "hit" << std::endl;
                 _zombie.get_shot(); 
             }
 
@@ -153,4 +154,29 @@ void player::handle_mouse_click(){
         }
         
     }
+}
+
+vec3 player::restrict_movement(vec3 zombie_pos, vec3 moving_direction){
+    vec3 v_ab = utils::remove_y_direction(zombie_pos - position);
+
+    float cos_angle = dot(v_ab, moving_direction);
+
+    if (cos_angle < 0) // moving in the opposite direction
+        return moving_direction;
+
+    vec3 projection = cos_angle* v_ab;
+
+    return moving_direction - projection;
+}
+
+vec3 player::collide_with_zombie(vec3 moving_direction){
+    for (auto&[name, _zombie]: *zombies){
+        vec3 d_ab = _zombie.position - position;
+
+        if (norm(d_ab) < 1.7){
+            moving_direction = restrict_movement(_zombie.position, moving_direction);
+        }
+        
+    }
+    return moving_direction;
 }
