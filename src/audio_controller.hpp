@@ -4,13 +4,9 @@
 
 struct listeners {
     bool shoot = false;
-    bool hit = false;
-    bool kill = false;
-    bool background = false;
-    bool background_creative = false;
-    bool death = false;
-    bool place_block = false;
+    bool take_hit = false;
     bool footsteps = false;
+    bool death = false;
 };
 
 extern listeners lists;

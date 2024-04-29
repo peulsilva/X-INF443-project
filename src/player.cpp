@@ -58,6 +58,12 @@ player::player(){}
 
 
 void player::move(){
+
+    if (!is_alive)
+        return;
+
+    // hit timeout counter 
+    timeout_counter += 1;
     auto& inputs = camera->inputs;
 
 
@@ -175,8 +181,28 @@ vec3 player::collide_with_zombie(vec3 moving_direction){
 
         if (norm(d_ab) < 1.7){
             moving_direction = restrict_movement(_zombie.position, moving_direction);
+
+            if (timeout_counter > hit_timeout )
+                take_hit();
+
+            timeout_counter = 0;
         }
         
     }
     return moving_direction;
+}
+
+void player::take_hit(){
+
+    health -= 30;
+    if (health > 0)
+        lists.take_hit = true;
+
+    std::cout << health << std::endl;
+    if (health < 0){
+        is_alive = false;
+        camera->camera_model.position_camera -= {0, 0.7, 0};
+        std::cout << camera->camera_model.position_camera << std::endl;
+        lists.death = true;
+    }
 }

@@ -8,13 +8,17 @@ listeners lists;
 void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
 
 void init_sound_effects(){
-	std::thread rifle_shot(init_sfx, "assets/audio/ak-47-89833.wav", 2000, &(lists.shoot), false);
+	std::thread rifle_shot(init_sfx, "assets/audio/ak-47-89833.wav", 500, &(lists.shoot), false);
 	rifle_shot.detach();
 
-    std::thread footsteps(init_sfx, "assets/audio/concrete-footsteps-6752.mp3", 2000, &(lists.footsteps), false);
+    std::thread footsteps(init_sfx, "assets/audio/concrete-footsteps-6752.mp3", 500, &(lists.footsteps), false);
 	footsteps.detach();
 
+    std::thread take_hit(init_sfx, "assets/audio/male_hurt7-48124.mp3", 1500, &(lists.take_hit), false);
+	take_hit.detach();
 
+    std::thread death(init_sfx, "assets/audio/alphascream001-98301.mp3", 1500, &(lists.death), false);
+	death.detach();
     // std::thread hit(init_sfx, "../assets/bullet_hit.wav", 100, &(lists.hit), false);
 	// hit.detach();
 
@@ -76,7 +80,7 @@ void init_sfx(const char* wav_path, int duration_ms, bool* listener, bool on_rep
 
  	   	// Sleep for the duration of the sound
  	   	std::chrono::milliseconds duration(duration_ms);
- 	   	std::this_thread::sleep_for(duration/4);
+ 	   	std::this_thread::sleep_for(duration);
         ma_device_uninit(&device);
         ma_decoder_uninit(&decoder);
         if (!on_repeat) *listener = false;
