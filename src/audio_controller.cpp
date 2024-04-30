@@ -11,6 +11,9 @@ void init_sound_effects(){
 	std::thread rifle_shot(init_sfx, "assets/audio/ak-47-89833.wav", 500, &(lists.shoot_rifle), false);
 	rifle_shot.detach();
 
+    std::thread handgun_shot(init_sfx, "assets/audio/single-pistol-gunshot-4-46970.mp3", 300, &(lists.shoot_handgun), false);
+	handgun_shot.detach();
+
     std::thread footsteps(init_sfx, "assets/audio/concrete-footsteps-6752.mp3", 500, &(lists.footsteps), false);
 	footsteps.detach();
 
@@ -23,8 +26,11 @@ void init_sound_effects(){
     std::thread empty_clip(init_sfx, "assets/audio/rifle-clip-empty-98832.mp3", 500, &(lists.empty_clip), false);
 	empty_clip.detach();
 
-    std::thread reload(init_sfx, "assets/audio/machine-gun-reload-81593.mp3", 1000, &(lists.reload), false);
-	reload.detach();
+    std::thread reload_rifle(init_sfx, "assets/audio/machine-gun-reload-81593.mp3", 1000, &(lists.reload_rifle), false);
+	reload_rifle.detach();
+
+    std::thread reload_handgun(init_sfx, "assets/audio/mag-reload-81594.mp3", 2000, &(lists.reload_handgun), false);
+	reload_handgun.detach();
     // std::thread hit(init_sfx, "../assets/bullet_hit.wav", 100, &(lists.hit), false);
 	// hit.detach();
 

@@ -16,7 +16,7 @@ player::player(
     std::map<std::string, zombie>& _zombies
 ){
     
-    curr_weapon = weapon(rifle);
+    curr_weapon = weapon(handgun);
 
     is_aiming = false;
 
@@ -142,7 +142,7 @@ void player::handle_mouse_click(){
                 float angle = acos(dot(v1, v2)) * 180/ constants::PI;
                 
                 if (angle < 10/dist){
-                    _zombie.get_shot(); 
+                    _zombie.get_shot(curr_weapon.damage); 
                 }
 
                 // TODO: check vertical hit 

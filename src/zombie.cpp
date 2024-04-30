@@ -9,7 +9,7 @@ zombie::zombie(vec3 _position, std::string _name){
 	speed = constants::ENEMY_SPEED;
     character = load_character_zombie();
 	character.set_current_animation("Walk");
-    effect_walking.root_position = position + vec3{0,1,0};
+    effect_walking.root_position = position + vec3{0,0.9,0};
 	
 }
 
@@ -28,17 +28,43 @@ vec3 zombie::looking_at(){
 
 zombie::zombie(){}
 
-void zombie::get_shot(){
+void zombie::get_shot(int weapon_damage){
 	if (!is_alive)
 		return;
-	is_alive = false;
-	character.set_current_animation("Death");   
-	character.timer.t_periodic = 0;
 
-	
-	rotation_transform r = rotation_axis_angle(vec3(0.0f, 1.0f, 0.0f), effect_walking.root_angle);
 
-	character.animated_model.apply_transformation({0,0,0},r );
+	health -= weapon_damage;
+
+	if (health <=0 ){
+
+		is_alive = false;
+		character.set_current_animation("Death");   
+		character.timer.t_periodic = 0;
+
+		if (!was_hit){
+		
+			rotation_transform r = rotation_axis_angle(vec3(0.0f, 1.0f, 0.0f), effect_walking.root_angle);
+
+			character.animated_model.apply_transformation({0,0,0},r );
+		}
+	}
+
+	else{
+		character.set_current_animation("Hit");
+
+		character.timer.t_periodic = 0;
+
+		std::cout << effect_walking.root_angle << std::endl;
+		if (!was_hit){
+			
+			rotation_transform r = rotation_axis_angle(vec3(0.0f, 1.0f, 0.0f), effect_walking.root_angle);
+
+			character.animated_model.apply_transformation({0,0,0},r );
+		}
+		was_hit = true;
+	}
+
+
 }
 
 void zombie::move(
@@ -46,7 +72,8 @@ void zombie::move(
 	std::map<std::string, zombie>& other_zombies
 )
 {   
-	if (!is_alive){
+
+	if (!is_alive || was_hit){
 
 		vec3 forward_direction = vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));
 		// rotation_transform r = rotation_axis_angle(vec3(0.0f, 1.0f, 0.0f), effect_walking.root_angle);
@@ -57,8 +84,16 @@ void zombie::move(
 		character.animated_model.skeleton.joint_matrix_global[0].apply_translation({position.x,0,position.z});
 		
 
-		if (character.timer.t_periodic > character.timer.event_period -0.02)
-			display_death_animation = false;
+		if (character.timer.t_periodic > character.timer.event_period -0.04){
+			if (!is_alive)
+				display_death_animation = false;
+			
+			if (was_hit){
+				was_hit = false;
+				character.set_current_animation("Walk");
+				
+			}
+		}
 		
 		for (unsigned int i = 1; i <  character.animated_model.skeleton.joint_matrix_local.size(); i++)
 		{
@@ -106,7 +141,6 @@ void zombie::move(
 	
 	delta_position = collide_with_zombies(other_zombies, delta_position);	
 
-	
 	rotation_transform r = rotation_axis_angle(vec3(0.0f, 1.0f, 0.0f), effect_walking.root_angle);
 	quaternion q = normalize(r.get_quaternion());
 	mat3 r_mat = rotation_transform::convert_quaternion_to_matrix(q);
@@ -121,6 +155,7 @@ void zombie::move(
 		int parent_index = character.animated_model.skeleton.parent_index[i];
 		character.animated_model.skeleton.joint_matrix_global[i] = character.animated_model.skeleton.joint_matrix_global[parent_index] * character.animated_model.skeleton.joint_matrix_local[i];
 	}
+
 	character.animated_model.skeleton.update_joint_matrix_global_to_local();
 
 }

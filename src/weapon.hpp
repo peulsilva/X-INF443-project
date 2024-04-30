@@ -24,6 +24,8 @@ class weapon{
         int max_bullets_in_clip;
         mesh_drawable object; 
 
+        int damage;
+
         int timeout;
         int counter = 0;
         

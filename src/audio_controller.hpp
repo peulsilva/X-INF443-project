@@ -4,8 +4,10 @@
 
 struct listeners {
     bool shoot_rifle = false;
+    bool shoot_handgun = false;
     bool empty_clip = false;
-    bool reload = false;
+    bool reload_rifle = false;
+    bool reload_handgun = false;
     bool take_hit = false;
     bool footsteps = false;
     bool death = false;

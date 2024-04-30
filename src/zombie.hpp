@@ -16,12 +16,13 @@ class zombie {
         effect_walking_structure effect_walking;
         bool first_iteration = true;
 
+        int health = 100;
+
         std::string name;
 
         bool is_alive = true;
+        bool was_hit = false;
         bool display_death_animation = true;
-
-        void get_shot();
 
         vec3 looking_at();
 
@@ -30,6 +31,8 @@ class zombie {
         zombie();
 
         zombie(const zombie& other);
+
+        void get_shot(int weapon_damage);
 
         void move(vec3 player_position, std::map<std::string, zombie>& other_zombies);
 
