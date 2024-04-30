@@ -91,7 +91,6 @@ void zombie::move(
 			if (was_hit){
 				was_hit = false;
 				character.set_current_animation("Walk");
-				
 			}
 		}
 		

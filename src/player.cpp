@@ -16,7 +16,7 @@ player::player(
     std::map<std::string, zombie>& _zombies
 ){
     
-    curr_weapon = weapon(handgun);
+    curr_weapon = weapon(rifle);
 
     is_aiming = false;
 

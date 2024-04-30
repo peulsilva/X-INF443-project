@@ -123,8 +123,8 @@ void weapon::draw(
         );
         
         object.model.translation = !is_aiming ? 
-            camera->camera_model.position() - 0.6 * camera->camera_model.up() + 0.1 * camera->camera_model.right()
-            : camera->camera_model.position() - 0.57 * camera->camera_model.up() +  0.03 * camera->camera_model.right();
+            camera->camera_model.position() - 0.6 * camera->camera_model.up() + 0.1 * camera->camera_model.right() + 0.1 * camera->camera_model.front()
+            : camera->camera_model.position() - 0.57 * camera->camera_model.up() +  0.034 * camera->camera_model.right() + 0.1 * camera->camera_model.front();
         
         object.model.set_scaling(5e-3f);
     }
