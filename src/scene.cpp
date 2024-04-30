@@ -41,10 +41,10 @@ void scene_structure::initialize()
 
 
 	// zombie
-	zombies["1"] = zombie(vec3{20,0,0});
-	zombies["2"] = zombie(vec3{-20,0,0});
-	zombies["3"] = zombie(vec3{-15,0,14});
-	zombies["4"] = zombie(vec3{15,0,14});
+	zombies["1"] = zombie(vec3{20,0,0}, "1");
+	zombies["2"] = zombie(vec3{-20,0,0}, "2");
+	zombies["3"] = zombie(vec3{-15,0,14}, "3");
+	zombies["4"] = zombie(vec3{15,0,14}, "4");
 	
 	current_active_zombie = "1";
 
@@ -150,7 +150,7 @@ void scene_structure::animate_characters(){
 			effect_transition_compute(transition, character);
 			effect_transition_stop_if_completed(transition, character);
 		}
-		this_zombie.move(this_player.position);
+		this_zombie.move(this_player.position, zombies);
 	}
 
 	// ********************************** //

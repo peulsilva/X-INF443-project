@@ -20,7 +20,7 @@ weapon::weapon(weapon_type _type){
         );
         object.material.color = 0.3f * vec3{1, 1, 1};
 
-        bullets_in_clip = 30;
+        bullets_in_clip = 5;
         total_bullets = 60;
         max_bullets_in_clip = bullets_in_clip;
     }

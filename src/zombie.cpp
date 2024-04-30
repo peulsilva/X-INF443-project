@@ -2,7 +2,8 @@
 #include "constants.hpp"
 using namespace cgp;
 
-zombie::zombie(vec3 _position){
+zombie::zombie(vec3 _position, std::string _name){
+	name = _name;
     position = _position;
 
 	speed = constants::ENEMY_SPEED;
@@ -16,6 +17,7 @@ zombie::zombie(const zombie& other) {
     position = other.position;
     character = other.character; // Assuming character_structure supports copy construction
     // character.animated_model.apply_transformation(position);
+	name = other.name;
 
 }
 
@@ -40,7 +42,8 @@ void zombie::get_shot(){
 }
 
 void zombie::move(
-	vec3 player_position
+	vec3 player_position,
+	std::map<std::string, zombie>& other_zombies
 )
 {   
 	if (!is_alive){
@@ -99,15 +102,16 @@ void zombie::move(
 	forward_direction = vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));
 	vec3 delta_position = forward_direction * speed;
 	
-	collide_with_player(player_position, delta_position);
+	delta_position = collide_with_player(player_position, delta_position);
 	
-	
+	delta_position = collide_with_zombies(other_zombies, delta_position);	
 
 	
 	rotation_transform r = rotation_axis_angle(vec3(0.0f, 1.0f, 0.0f), effect_walking.root_angle);
 	quaternion q = normalize(r.get_quaternion());
 	mat3 r_mat = rotation_transform::convert_quaternion_to_matrix(q);
 	
+	effect_walking.root_position +=delta_position;
 	position = effect_walking.root_position;
 	character.animated_model.skeleton.joint_matrix_global[0].set_block_translation((effect_walking.root_position));
 	character.animated_model.skeleton.joint_matrix_global[0].set_block_linear(r_mat );
@@ -121,12 +125,14 @@ void zombie::move(
 
 }
 
-void zombie::collide_with_player(vec3 player_position, vec3 walking_position){
+vec3 zombie::collide_with_player(vec3 player_position, vec3 walking_position){
 	vec3 d_AB = player_position - position;
 
 	if (norm(d_AB) > 1.7){
-		effect_walking.root_position += walking_position;
+		return walking_position;
 	}
+
+	return vec3{0,0,0};
 
 	// vec3 forward_direction = vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));
 
@@ -134,4 +140,31 @@ void zombie::collide_with_player(vec3 player_position, vec3 walking_position){
 
 	// vec3 proj = dot(forward_direction, d_AB)* forward_direction;
 
+}
+
+vec3 zombie::restrict_movement(vec3 other_zombie_pos, vec3 moving_direction){
+    vec3 v_ab = utils::remove_y_direction(other_zombie_pos - position);
+
+    float cos_angle = dot(v_ab, moving_direction);
+
+    if (cos_angle < 0) // moving in the opposite direction
+        return moving_direction;
+
+    vec3 projection = cos_angle* v_ab;
+
+    return moving_direction - projection;
+}
+
+vec3 zombie::collide_with_zombies(std::map<std::string, zombie> & all_zombies, vec3 walking_direction){
+	for (auto [_name, _zombie] : all_zombies){
+		if (_name.compare(name) ==0)
+			continue;
+
+		vec3 d_AB = _zombie.position - position;
+
+		if (norm(d_AB) < 1.7){
+			walking_direction = restrict_movement(_zombie.position, walking_direction);
+		}
+	}
+	return walking_direction;
 }
