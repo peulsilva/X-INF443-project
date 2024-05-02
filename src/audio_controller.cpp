@@ -14,6 +14,12 @@ void init_sound_effects(){
     std::thread handgun_shot(init_sfx, "assets/audio/single-pistol-gunshot-4-46970.mp3", 300, &(lists.shoot_handgun), false);
 	handgun_shot.detach();
 
+    std::thread shotgun_shot(init_sfx, "assets/audio/shotgun-fire-and-cock-sound-for-gaming-85529-[AudioTrimmer.com].mp3", 1200, &(lists.shoot_shotgun), false);
+	shotgun_shot.detach();
+
+    std::thread smg_shot(init_sfx, "assets/audio/smgshoot2-35768-[AudioTrimmer.com]-[AudioTrimmer.com]-[AudioTrimmer.com]-[AudioTrimmer.com] (1)-[AudioTrimmer.com].mp3", 100, &(lists.shoot_smg), false);
+	smg_shot.detach();
+
     std::thread footsteps(init_sfx, "assets/audio/concrete-footsteps-6752.mp3", 500, &(lists.footsteps), false);
 	footsteps.detach();
 
@@ -31,6 +37,9 @@ void init_sound_effects(){
 
     std::thread reload_handgun(init_sfx, "assets/audio/mag-reload-81594.mp3", 2000, &(lists.reload_handgun), false);
 	reload_handgun.detach();
+
+    std::thread reload_shotgun(init_sfx, "assets/audio/shotgun-sounds-6464-[AudioTrimmer.com].mp3", 5000, &(lists.reload_shotgun), false);
+	reload_shotgun.detach();
     // std::thread hit(init_sfx, "../assets/bullet_hit.wav", 100, &(lists.hit), false);
 	// hit.detach();
 

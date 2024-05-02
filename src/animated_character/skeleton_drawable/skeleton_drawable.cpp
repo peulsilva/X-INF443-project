@@ -18,7 +18,6 @@ skeleton_drawable::skeleton_drawable(skeleton_structure const& skeleton)
         edges.push_back(skeleton.joint_matrix_global[parent].get_block_translation());
     }
     
-    std::cout << "arrived here" << std::endl;
     segments.display_type = curve_drawable_display_type::Segments;
     segments.initialize_data_on_gpu(edges);
     joint_frame.initialize_data_on_gpu(mesh_primitive_frame());

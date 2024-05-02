@@ -28,6 +28,11 @@ void scene_structure::initialize()
 	skybox.texture.initialize_cubemap_on_gpu(image_grid[1], image_grid[7], image_grid[5], image_grid[3], image_grid[10], image_grid[4]);
 
 
+	// auto struct_shape = mesh_load_file_obj_advanced(project::path + "assets/worlds/holodeck/", "holodeck.obj");
+	// // auto struct_shape = mesh_load_file_obj_advanced(project::path + "assets/sponza/", "sponza.obj");
+	
+	// shapes = mesh_obj_advanced_loader::convert_to_mesh_drawable(struct_shape);
+
 
 	// terrain
 
@@ -83,6 +88,13 @@ void scene_structure::display_frame()
     draw(skybox, environment);
 
 	glEnable(GL_DEPTH_TEST);
+
+	// display map
+
+	// for (auto& shape : shapes){
+	// 	std::cout << shape. << std::endl;
+	// 	draw(shape, environment);
+	// }
 
 	draw(ground, environment);
 

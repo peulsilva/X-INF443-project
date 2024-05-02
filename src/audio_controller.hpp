@@ -5,9 +5,12 @@
 struct listeners {
     bool shoot_rifle = false;
     bool shoot_handgun = false;
+    bool shoot_shotgun = false;
+    bool shoot_smg = false;
     bool empty_clip = false;
     bool reload_rifle = false;
     bool reload_handgun = false;
+    bool reload_shotgun = false;
     bool take_hit = false;
     bool footsteps = false;
     bool death = false;

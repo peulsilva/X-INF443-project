@@ -36,6 +36,8 @@ struct scene_structure : cgp::scene_inputs_generic {
 	gui_parameters gui;                  // Standard GUI element storage
 	
 
+	std::vector<mesh_drawable> shapes;
+
 	// Special camera mode adapted to a 2D displacement mode
 	camera_controller camera_control;
 
