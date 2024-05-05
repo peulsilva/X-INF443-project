@@ -14,6 +14,7 @@ struct listeners {
     bool take_hit = false;
     bool footsteps = false;
     bool death = false;
+    bool zombie_moaning = false;
 };
 
 extern listeners lists;

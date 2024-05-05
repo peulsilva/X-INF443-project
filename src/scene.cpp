@@ -20,7 +20,7 @@ void scene_structure::initialize()
 
 	// skybox
 
-	image_structure image_skybox = image_load_file("assets/skybox_02.jpg");
+	image_structure image_skybox = image_load_file("assets/skybox.jpg");
 
 	std::vector<image_structure> image_grid = image_split_grid(image_skybox, 4, 3);
 
@@ -44,12 +44,14 @@ void scene_structure::initialize()
 
 	gui.display_frame = true;
 
+	base_zombie = zombie({0,0,0}, "0", false);
 
-	// zombie
-	zombies["1"] = zombie(vec3{20,0,0}, "1");
-	zombies["2"] = zombie(vec3{-20,0,0}, "2");
-	zombies["3"] = zombie(vec3{-15,0,14}, "3");
-	zombies["4"] = zombie(vec3{15,0,14}, "4");
+	base_weapons = {
+		{rifle, weapon(rifle)},
+		{handgun, weapon(handgun)},
+		{shotgun, weapon(shotgun)},
+		{smg, weapon(smg)}
+	};
 	
 	current_active_zombie = "1";
 
@@ -89,14 +91,13 @@ void scene_structure::display_frame()
 
 	glEnable(GL_DEPTH_TEST);
 
-	// display map
-
-	// for (auto& shape : shapes){
-	// 	std::cout << shape. << std::endl;
-	// 	draw(shape, environment);
-	// }
+	
 
 	draw(ground, environment);
+
+	for (auto& [w, pos] : weapons){
+		w.draw_on_scene(environment, pos);
+	}
 
 	if (gui.display_wireframe)
 		draw_wireframe(ground, environment);
@@ -105,6 +106,9 @@ void scene_structure::display_frame()
 
     glClear(GL_DEPTH_BUFFER_BIT);
 	this_player.draw(environment, gui.display_wireframe);
+	
+	// spawn_zombies();
+	spawn_weapons();
 }
 
 void scene_structure::display_gui()
@@ -223,6 +227,82 @@ void scene_structure::animate_characters(){
 		// 	character.sk_drawable.display_segments = gui.display_skeleton_bone;
 		// 	draw(character.sk_drawable, environment);
 		// }
+
+	}
+}
+
+void scene_structure::spawn_zombies(){
+	std::vector<vec3> spawn_positions = {
+		vec3(12, 0, 28),
+		vec3(-35, 0, -10),
+		vec3(40, 0, -20),
+		vec3(25, 0, 45),
+		vec3(-8, 0, 30),
+		vec3(3, 0, -40),
+		vec3(-45, 0, 20),
+		vec3(-20, 0, 38),
+		vec3(17, 0, -15),
+		vec3(-30, 0, -45)
+	};
+
+	float prob = std::rand() / ((float) RAND_MAX);
+
+
+	if (prob < 1/200.){
+		std::string idx_zombie = std::to_string(zombies_count++);
+
+		int spawn_position_idx = std::rand() % spawn_positions.size();
+
+		if (zombies.size() >= 5){
+			bool erased_any = false;
+
+			std::vector<std::string> should_erase;
+
+			for (auto& [name, _zombie] : zombies){
+				if (!_zombie.is_alive){
+					// zombies.erase(name);
+					should_erase.push_back(name);
+					erased_any = true;
+				}
+			}
+
+			for (auto & n : should_erase){
+				zombies.erase(n);
+			}
+
+			if (erased_any){
+				// zombies[idx_zombie]= zombie(spawn_positions[spawn_position_idx], idx_zombie);	
+				zombies[idx_zombie]= base_zombie;
+				zombies[idx_zombie].show = true;
+				zombies[idx_zombie].position += spawn_positions[spawn_position_idx];	
+				zombies[idx_zombie].effect_walking.root_position += spawn_positions[spawn_position_idx];	
+			}
+	
+		}
+
+		else{
+			zombies[idx_zombie]= base_zombie;
+			zombies[idx_zombie].show = true;
+			zombies[idx_zombie].position += spawn_positions[spawn_position_idx];	
+			zombies[idx_zombie].effect_walking.root_position += spawn_positions[spawn_position_idx];	
+		}
+	}
+}
+
+void scene_structure::spawn_weapons(){
+
+	
+	float prob = std::rand() / ((float) RAND_MAX);
+
+	if (prob < 1/200.){
+
+		int pos_x = std::rand() % 50;
+		int pos_z = std::rand() % 50;
+
+		weapon_type random_weapon = weapon::choose_random_weapon();
+
+		weapon this_weapon = base_weapons[random_weapon];
+		weapons.push_back({this_weapon, {pos_x, 0, pos_z}});
 
 	}
 }

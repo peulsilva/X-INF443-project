@@ -240,3 +240,76 @@ void weapon::draw(
     else
         cgp::draw(object, env);
 }
+
+void weapon::draw_on_scene(
+    const environment_structure& env,
+    vec3 position
+){
+    if (type == rifle){
+        vec3 e1 = normalize(vec3{-1,0,0});
+        object.model.rotation = rotation_transform::from_frame_transform(
+            e1, 
+            {0,0,1}, 
+            {0,0,1}, 
+            vec3{1,0,0}
+        );
+        
+        object.model.translation = {position.x, 0.8, position.z};
+
+        // object.model = 100;
+        
+        object.model.set_scaling(5e-3f);
+    }
+
+    else if (type == handgun){
+        vec3 e1 = normalize(vec3{-1,0,0});
+        object.model.rotation = rotation_transform::from_frame_transform(
+            {1,0,0}, 
+            {0,0,-1}, 
+            {0,0,1}, 
+            {0,1,0}
+        );
+        
+        object.model.translation = {position.x, 0.8, position.z};
+        
+        object.model.set_scaling(3e-2f);
+    }
+
+    else if (type == shotgun){
+        object.model.rotation = rotation_transform::from_frame_transform(
+            {1,0,0}, 
+            {0,0,1}, 
+            {0,0,1}, 
+            {-1,0,0}
+        );
+        
+        object.model.translation = {position.x, 0.8, position.z};
+        
+        object.model.set_scaling(3e-1f);
+    }
+
+    else if (type == smg){
+        object.model.rotation = rotation_transform::from_frame_transform(
+            {1,0,0}, 
+            {0,1,0}, 
+            {0,0,1}, 
+            {0,1,0}
+        );
+        
+        object.model.translation = {position.x, 0.8, position.z};
+        object.model.set_scaling(1e-1f);
+    }
+
+    cgp::draw(object, env);
+}
+
+
+weapon_type weapon::choose_random_weapon(){
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+
+    // Generate a random number between 0 and 3 (number of enum values - 1)
+    int randomIndex = std::rand() % 4; // 4 is the number of enum values
+
+    // Convert the random number to a weapon type
+    return static_cast<weapon_type>(randomIndex);
+}

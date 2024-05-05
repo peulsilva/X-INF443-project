@@ -40,6 +40,9 @@ void init_sound_effects(){
 
     std::thread reload_shotgun(init_sfx, "assets/audio/shotgun-sounds-6464-[AudioTrimmer.com].mp3", 5000, &(lists.reload_shotgun), false);
 	reload_shotgun.detach();
+
+    std::thread zombie_moaning(init_sfx, "assets/audio/growling-zombie-104988.mp3", 5000, &(lists.zombie_moaning), false);
+	zombie_moaning.detach();
     // std::thread hit(init_sfx, "../assets/bullet_hit.wav", 100, &(lists.hit), false);
 	// hit.detach();
 

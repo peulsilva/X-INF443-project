@@ -1,10 +1,25 @@
 #include "zombie.hpp"
 #include "constants.hpp"
+#include "audio_controller.hpp"
+
 using namespace cgp;
 
 zombie::zombie(vec3 _position, std::string _name){
 	name = _name;
     position = _position;
+
+	speed = constants::ENEMY_SPEED;
+    character = load_character_zombie();
+	character.set_current_animation("Walk");
+    effect_walking.root_position = position + vec3{0,0.9,0};
+	
+}
+
+zombie::zombie(vec3 _position, std::string _name, bool _show){
+	name = _name;
+    position = _position;
+
+	show = false;
 
 	speed = constants::ENEMY_SPEED;
     character = load_character_zombie();
@@ -69,10 +84,11 @@ void zombie::get_shot(int weapon_damage){
 
 void zombie::move(
 	vec3 player_position,
-	std::map<std::string, zombie>& other_zombies
+	std::unordered_map<std::string, zombie>& other_zombies
 )
 {   
-
+	if (! show)
+		return;
 	if (!is_alive || was_hit){
 
 		vec3 forward_direction = vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));
@@ -104,6 +120,7 @@ void zombie::move(
 	}
 
     int rotate = 1;
+	lists.zombie_moaning = true;
 	// Calculate direction from zombie to player
 	vec3 forward_direction = vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));
 	vec3 zombie_to_player = (player_position - position) - forward_direction;
@@ -189,7 +206,7 @@ vec3 zombie::restrict_movement(vec3 other_zombie_pos, vec3 moving_direction){
     return moving_direction - projection;
 }
 
-vec3 zombie::collide_with_zombies(std::map<std::string, zombie> & all_zombies, vec3 walking_direction){
+vec3 zombie::collide_with_zombies(std::unordered_map<std::string, zombie> & all_zombies, vec3 walking_direction){
 	for (auto [_name, _zombie] : all_zombies){
 		if (_name.compare(name) ==0)
 			continue;

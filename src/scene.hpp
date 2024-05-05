@@ -41,8 +41,14 @@ struct scene_structure : cgp::scene_inputs_generic {
 	// Special camera mode adapted to a 2D displacement mode
 	camera_controller camera_control;
 
-	std::map<std::string, zombie> zombies;
+	std::unordered_map<std::string, zombie> zombies;
+
+	std::unordered_map<weapon_type, weapon> base_weapons;
+	zombie base_zombie;
+	
 	std::string current_active_zombie;
+
+	std::vector<std::pair<weapon, vec3>> weapons;
 
 
 	std::map<std::string, effect_transition_structure> effect_transition;	
@@ -52,6 +58,8 @@ struct scene_structure : cgp::scene_inputs_generic {
 	// ****************************** //
 	// Elements and shapes of the scene
 	// ****************************** //
+
+	int zombies_count = 0;
 
 	mesh_drawable ground;
 	mesh_drawable cylinder;
@@ -73,6 +81,10 @@ struct scene_structure : cgp::scene_inputs_generic {
 	void mouse_click_event();
 	void keyboard_event();
 	void idle_frame();
+
+	void spawn_zombies();
+
+	void spawn_weapons();
 
 	void display_info();
 

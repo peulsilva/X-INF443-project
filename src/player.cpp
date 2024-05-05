@@ -13,10 +13,10 @@ using namespace cgp;
 player::player(
     vec3 _position, 
     camera_controller_first_person_euler& _camera,
-    std::map<std::string, zombie>& _zombies
+    std::unordered_map<std::string, zombie>& _zombies
 ){
     
-    curr_weapon = weapon(smg);
+    curr_weapon = weapon(handgun);
 
     is_aiming = false;
 

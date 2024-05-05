@@ -4,6 +4,7 @@
 #include "utils.hpp"
 #include "zombie.hpp"
 #include "weapon.hpp"
+#include <unordered_map>
 
 using namespace cgp;
 
@@ -26,11 +27,11 @@ class player{
         vec3 player_direction;
         vec3 camera_position;
 
-        std::map<std::string, zombie>* zombies;
+        std::unordered_map<std::string, zombie>* zombies;
 
         bool is_aiming;
 
-        player(vec3 _position, camera_controller_first_person_euler& _camera, std::map<std::string, zombie>& _zombies);
+        player(vec3 _position, camera_controller_first_person_euler& _camera, std::unordered_map<std::string, zombie>& _zombies);
 
         player();
 
