@@ -142,7 +142,7 @@ void zombie::move(
 	// Adjust the angle gradually to smoothly turn towards the player
 	float angleSpeed = 0.1f * rotate;
 
-	if (abs(angle - effect_walking.root_angle) > angleSpeed) {
+	if (cgp::abs(angle - effect_walking.root_angle) > angleSpeed) {
 		float rotation_dir = angle - effect_walking.root_angle > 0.0f ? 1.0f : -1.0f;
 		effect_walking.root_angle += rotation_dir * angleSpeed;
 	} else {
