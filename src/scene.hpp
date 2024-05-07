@@ -19,6 +19,8 @@ using cgp::mesh_drawable;
 struct gui_parameters {
 	bool display_frame = true;
 	bool display_wireframe = false;
+	ImVec2 weapon_window_size = {300, 100};
+	ImVec2 helper_window_size = {50,50};
 };
 
 // The structure of the custom scene
@@ -35,6 +37,7 @@ struct scene_structure : cgp::scene_inputs_generic {
 	input_devices inputs;                // Storage for inputs status (mouse, keyboard, window dimension)
 	gui_parameters gui;                  // Standard GUI element storage
 	
+	timer_fps *fps_counter;
 
 	std::vector<mesh_drawable> shapes;
 

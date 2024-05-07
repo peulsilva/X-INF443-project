@@ -80,6 +80,7 @@ void scene_structure::display_frame()
 {
 	// Set the light to the current position of the camera
 	environment.light = camera_control.camera_model.position();
+	this_player.curr_weapon.set_fps(std::min(fps_counter->fps, 60));
 	
 	if (gui.display_frame)
 		draw(global_frame, environment);
@@ -113,8 +114,27 @@ void scene_structure::display_frame()
 
 void scene_structure::display_gui()
 {
-	// ImGui::Checkbox("Frame", &gui.display_frame);
-	// ImGui::Checkbox("Wireframe", &gui.display_wireframe);
+
+	ImGui::Begin("weapon", NULL, 
+		ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground
+	);
+	ImGui::SetWindowSize(gui.weapon_window_size);
+	ImGui::SetWindowPos({
+		window.screen_resolution_width - gui.weapon_window_size.x, 
+		window.screen_resolution_height - gui.weapon_window_size.y
+	});
+
+	ImGui::SetWindowFontScale(2);
+	ImGui::Text("----------------------------------------------------");
+	std::string weapon_info = this_player.curr_weapon.get_weapon_name();
+	weapon_info += "   ";
+	weapon_info += std::to_string(this_player.curr_weapon.bullets_in_clip);
+	weapon_info += " / ";
+	weapon_info += std::to_string(this_player.curr_weapon.total_bullets);
+	ImGui::Text(weapon_info.c_str());
+	ImGui::Text("----------------------------------------------------");
+	ImGui::End();
+
 }
 
 void scene_structure::mouse_move_event()

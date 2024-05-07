@@ -20,18 +20,81 @@
 
 scene_structure scene;
 
-
-// The rest of this code is a generic initialization and animation loop that can be applied to different scenes
-// *************************** //
-// Start of the program
-// *************************** //
-
 window_structure standard_window_initialization();
 void initialize_default_shaders();
 void animation_loop();
 void display_gui_default();
 
+bool render_menu = false;
+int menu_timer = 0;
+int menu_timeout = 50;
+
 timer_fps fps_record;
+
+void main_menu(){
+
+	emscripten_update_window_size(scene.window.width, scene.window.height); // update window size in case of use of emscripten (not used by default)
+    glfwSetInputMode(scene.window.glfw_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+	scene.camera_projection.aspect_ratio = scene.window.aspect_ratio();
+	scene.environment.camera_projection = scene.camera_projection.matrix();
+	glViewport(0, 0, scene.window.width, scene.window.height);
+
+	vec3 const& background_color = 0.*vec3{1,1,1};
+	glClearColor(background_color.x, background_color.y, background_color.z, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+
+	float const time_interval = fps_record.update();
+	glfwSetWindowTitle(scene.window.glfw_window, "X-zombies");
+
+	imgui_create_frame();
+	ImGui::GetIO().FontGlobalScale = project::gui_scale;
+	scene.inputs.mouse.on_gui = ImGui::GetIO().WantCaptureMouse;
+	scene.inputs.time_interval = time_interval;
+
+	ImVec2 window_size(500, 600);
+	ImGui::Begin("X-zombies", NULL, 
+		ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground
+	);
+	ImGui::Text("		 --------------------------");
+	ImGui::Text("		 | Welcome to X-zombies |");
+	ImGui::Text("		 --------------------------");
+	ImGui::Text(" ");
+	ImGui::Text("To move: A W S D");
+	ImGui::Text(" ");
+	ImGui::Text("To shoot: Right mouse button");
+	ImGui::Text("To aim: Left mouse button");
+	ImGui::Text("To reload your weppon: R");
+	ImGui::Text(" ");
+	ImGui::Text("To access the menu: P");
+	ImGui::Text(" ");
+	ImGui::Text(" ");
+	ImGui::Text("Good luck and have fun!");
+	ImGui::Text(" ");
+	ImGui::Text(" ");
+
+
+
+	ImGui::SetWindowSize(window_size);
+	ImGui::SetWindowPos({
+		(float)(scene.window.width - window_size.x)/2.0f,
+		(float)(scene.window.height - window_size.y)/2.0f,
+	});
+	ImGui::End();
+
+	// End of ImGui display and handle GLFW events
+	imgui_render_frame(scene.window.glfw_window);
+	glfwSwapBuffers(scene.window.glfw_window);
+	glfwPollEvents();
+
+}
+
+// The rest of this code is a generic initialization and animation loop that can be applied to different scenes
+// *************************** //
+// Start of the program
+// *************************** //
 
 int main(int, char* argv[])
 {
@@ -58,6 +121,7 @@ int main(int, char* argv[])
 	scene.initialize();
 	std::cout << "Initialization finished\n" << std::endl;
 
+	std::cout << "Start menu loop ..." << std::endl;
 
 	// ************************ //
 	//     Animation Loop
@@ -73,10 +137,19 @@ int main(int, char* argv[])
 #ifndef __EMSCRIPTEN__
     double lasttime = glfwGetTime();
 	// Default mode to run the animation/display loop with GLFW in C++
+	
 	while (!glfwWindowShouldClose(scene.window.glfw_window)) {
 		// The real animation loop
-		animation_loop();
 
+		menu_timer++;	
+		scene.fps_counter = &fps_record;
+		if (render_menu){
+			main_menu();
+		}
+
+
+		else
+			animation_loop();
 		// FPS limitation
 		if(project::fps_limiting){
 			while (glfwGetTime() < lasttime + 1.0 / project::fps_max) {	}
@@ -121,7 +194,8 @@ void animation_loop()
 
 	imgui_create_frame();
 	ImGui::GetIO().FontGlobalScale = project::gui_scale;
-	ImGui::Begin("GUI", NULL, ImGuiWindowFlags_AlwaysAutoResize);
+	// ImGui::Begin("GUI", NULL, ImGuiWindowFlags_NoDecoration);
+	
 	scene.inputs.mouse.on_gui = ImGui::GetIO().WantCaptureMouse;
 	scene.inputs.time_interval = time_interval;
 
@@ -138,7 +212,6 @@ void animation_loop()
 
 
 	// End of ImGui display and handle GLFW events
-	ImGui::End();
 	imgui_render_frame(scene.window.glfw_window);
 	glfwSwapBuffers(scene.window.glfw_window);
 	glfwPollEvents();
@@ -195,6 +268,7 @@ window_structure standard_window_initialization()
 	// Create the window using GLFW
 	window_structure window;
 	window.create_window(window_width, window_height, "CGP Display", CGP_OPENGL_VERSION_MAJOR, CGP_OPENGL_VERSION_MINOR);
+	window.set_full_screen();
 
 
 	// Display information
@@ -235,7 +309,8 @@ void window_size_callback(GLFWwindow*, int width, int height)
 // This function is called everytime the mouse is moved
 void mouse_move_callback(GLFWwindow* /*window*/, double xpos, double ypos)
 {
-	
+	if (render_menu)
+		return;
 	vec2 const pos_relative = scene.window.convert_pixel_to_relative_coordinates({ xpos, ypos });
 	scene.inputs.mouse.position.update(pos_relative);
 	scene.mouse_move_event();
@@ -246,6 +321,10 @@ void mouse_click_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
 	
+	if (render_menu){
+		render_menu = false;
+		return;
+	}
 	scene.inputs.mouse.click.update_from_glfw_click(button, action);
 	scene.mouse_click_event();
 }
@@ -264,11 +343,21 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 {
 	ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 	bool imgui_capture_keyboard = ImGui::GetIO().WantCaptureKeyboard;
+
+	
 	
 	if(!imgui_capture_keyboard){
+		if (render_menu && menu_timer >= menu_timeout){
+			render_menu = false;
+			menu_timer = 0;
+		}
 		scene.inputs.keyboard.update_from_glfw_key(key, action);
 		scene.keyboard_event();
 
+		if (key == GLFW_KEY_P && menu_timer >= menu_timeout){
+			menu_timer = 0;
+			render_menu = true;
+		}
 		// Press 'F' for full screen mode
 		if (key == GLFW_KEY_F && action == GLFW_PRESS && scene.inputs.keyboard.shift) {
 			scene.window.is_full_screen = !scene.window.is_full_screen;
@@ -294,6 +383,7 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 void display_gui_default()
 {
 	std::string fps_txt = str(fps_record.fps)+" fps";
+	// ImGui::SetWindowSize(ImVec2{80,80});
 
 	if(scene.inputs.keyboard.ctrl)
 		fps_txt += " [ctrl]";
@@ -337,6 +427,7 @@ void display_gui_default()
 
 		ImGui::Spacing();ImGui::Separator();ImGui::Spacing();
 	}
+	ImGui::SetWindowSize({100,100});
 }
 
 

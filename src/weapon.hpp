@@ -1,7 +1,7 @@
 
 #include "cgp/cgp.hpp"
 #include "camera.hpp"
-#include "unordered_map"
+#include <unordered_map>
 
 using namespace cgp;
 
@@ -25,17 +25,30 @@ class weapon{
         int max_bullets_in_clip;
         mesh_drawable object; 
 
+        float timeout_factor;
+
         int damage;
 
-        int timeout;
+        float timeout;
         int counter = 0;
+
+        std::unordered_map<weapon_type, std::string> weapon_name_map = {
+            {rifle, "Rifle"},
+            {handgun, "Handgun"},
+            {shotgun, "Shotgun"},
+            {smg, "SMG"}
+        };
         
 
         weapon(weapon_type type);
         weapon();
 
+        std::string get_weapon_name();
+
         bool shoot();
         void reload();
+
+        void set_fps(int fps);
 
         int get_damage(vec3 zombie_pos, vec3 player_pos);
 

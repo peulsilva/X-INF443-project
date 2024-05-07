@@ -11,7 +11,7 @@ void init_sound_effects(){
 	std::thread rifle_shot(init_sfx, "assets/audio/ak-47-89833.wav", 500, &(lists.shoot_rifle), false);
 	rifle_shot.detach();
 
-    std::thread handgun_shot(init_sfx, "assets/audio/single-pistol-gunshot-4-46970.mp3", 300, &(lists.shoot_handgun), false);
+    std::thread handgun_shot(init_sfx, "assets/audio/single-pistol-gunshot-4-46970.mp3", 200, &(lists.shoot_handgun), false);
 	handgun_shot.detach();
 
     std::thread shotgun_shot(init_sfx, "assets/audio/shotgun-fire-and-cock-sound-for-gaming-85529-[AudioTrimmer.com].mp3", 1200, &(lists.shoot_shotgun), false);

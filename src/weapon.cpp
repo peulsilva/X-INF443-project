@@ -14,7 +14,7 @@ weapon::weapon(weapon_type _type){
     type = _type;
 
     if (type == rifle){
-        timeout = 32;
+        timeout_factor = 32/60.;
         object.initialize_data_on_gpu(
             mesh_load_file_obj("assets/Ak_47/Ak-47.obj")
         );
@@ -28,7 +28,7 @@ weapon::weapon(weapon_type _type){
     }
 
     if (type == handgun){
-        timeout = 20;
+        timeout_factor = 20/60.;
         object.initialize_data_on_gpu(
             mesh_load_file_obj("assets/M9.obj")
         );
@@ -43,7 +43,7 @@ weapon::weapon(weapon_type _type){
     }
 
     if (type == shotgun){
-        timeout = 65;
+        timeout_factor = 65/60.;
 
         damage = 100;
 
@@ -60,7 +60,7 @@ weapon::weapon(weapon_type _type){
     }
 
     if (type == smg){
-        timeout = 7;
+        timeout_factor = 7/60.;
 
         damage = 10;
 
@@ -75,6 +75,10 @@ weapon::weapon(weapon_type _type){
         max_bullets_in_clip = bullets_in_clip;
     }
 
+}
+
+std::string weapon::get_weapon_name(){
+    return weapon_name_map[type];
 }
 
 bool weapon::shoot(){
@@ -118,6 +122,10 @@ int weapon::get_damage(vec3 zombie_pos, vec3 player_pos){
     vec3 d_ab = zombie_pos - player_pos;
 
     return damage/norm(d_ab) * 6;
+}
+
+void weapon::set_fps(int fps){
+    timeout = timeout_factor * fps;
 }
 
 void weapon::reload(){
