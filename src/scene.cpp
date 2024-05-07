@@ -1,5 +1,6 @@
 #include "scene.hpp"
 #include "audio_controller.hpp"
+#include "constants.hpp"
 
 using namespace cgp;
 
@@ -107,8 +108,7 @@ void scene_structure::display_frame()
     glClear(GL_DEPTH_BUFFER_BIT);
 	this_player.draw(environment, gui.display_wireframe);
 	
-	// spawn_zombies();
-	spawn_weapons();
+	
 }
 
 void scene_structure::display_gui()
@@ -119,6 +119,7 @@ void scene_structure::display_gui()
 
 void scene_structure::mouse_move_event()
 {
+	
 	camera_control.action_mouse_move(environment.camera_view);
 }
 void scene_structure::mouse_click_event()
@@ -135,6 +136,8 @@ void scene_structure::keyboard_event()
 void scene_structure::idle_frame()
 {
 	this_player.handle_mouse_click();
+	spawn_zombies();
+	spawn_weapons();
 	this_player.move();
 	camera_control.idle_frame(environment.camera_view);
 }
@@ -151,7 +154,11 @@ void scene_structure::animate_characters(){
 		character_structure& character = this_zombie.character;
 		effect_transition_structure& transition = effect_transition[name];
 
+		if (!this_zombie.is_alive)
+			has_dead_zombie = true;
+
 		// Default animation reading a standard animation cycle
+		bool is_visible = dot(this_zombie.position, this_player.position) > 0;
 		if(transition.active==false) {
 			if (this_zombie.is_alive || this_zombie.display_death_animation){
 				character.animated_model.set_skeleton_from_animation(character.current_animation_name, character.timer.t_periodic);
@@ -248,12 +255,13 @@ void scene_structure::spawn_zombies(){
 	float prob = std::rand() / ((float) RAND_MAX);
 
 
+
 	if (prob < 1/200.){
 		std::string idx_zombie = std::to_string(zombies_count++);
 
 		int spawn_position_idx = std::rand() % spawn_positions.size();
 
-		if (zombies.size() >= 5){
+		if (zombies.size() >= constants::MAX_ZOMBIES_ON_SCREEN && has_dead_zombie){
 			bool erased_any = false;
 
 			std::vector<std::string> should_erase;
@@ -273,15 +281,18 @@ void scene_structure::spawn_zombies(){
 			if (erased_any){
 				// zombies[idx_zombie]= zombie(spawn_positions[spawn_position_idx], idx_zombie);	
 				zombies[idx_zombie]= base_zombie;
+				zombies[idx_zombie].name= idx_zombie;
 				zombies[idx_zombie].show = true;
 				zombies[idx_zombie].position += spawn_positions[spawn_position_idx];	
 				zombies[idx_zombie].effect_walking.root_position += spawn_positions[spawn_position_idx];	
 			}
-	
+			
+			has_dead_zombie = false;
 		}
 
-		else{
+		else if (zombies.size() < constants::MAX_ZOMBIES_ON_SCREEN){
 			zombies[idx_zombie]= base_zombie;
+			zombies[idx_zombie].name= idx_zombie;
 			zombies[idx_zombie].show = true;
 			zombies[idx_zombie].position += spawn_positions[spawn_position_idx];	
 			zombies[idx_zombie].effect_walking.root_position += spawn_positions[spawn_position_idx];	
@@ -294,7 +305,7 @@ void scene_structure::spawn_weapons(){
 	
 	float prob = std::rand() / ((float) RAND_MAX);
 
-	if (prob < 1/200.){
+	if (prob < 1/2000.){
 
 		int pos_x = std::rand() % 50;
 		int pos_z = std::rand() % 50;

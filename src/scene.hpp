@@ -45,6 +45,8 @@ struct scene_structure : cgp::scene_inputs_generic {
 
 	std::unordered_map<weapon_type, weapon> base_weapons;
 	zombie base_zombie;
+
+	bool has_dead_zombie; 
 	
 	std::string current_active_zombie;
 
