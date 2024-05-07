@@ -25,7 +25,7 @@ void initialize_default_shaders();
 void animation_loop();
 void display_gui_default();
 
-bool render_menu = false;
+bool render_menu = true;
 int menu_timer = 0;
 int menu_timeout = 50;
 
@@ -69,6 +69,7 @@ void main_menu(){
 	ImGui::Text("To reload your weppon: R");
 	ImGui::Text(" ");
 	ImGui::Text("To access the menu: P");
+	ImGui::Text("If you are out of ammo, you can look for other weapons in the map");
 	ImGui::Text(" ");
 	ImGui::Text(" ");
 	ImGui::Text("Good luck and have fun!");

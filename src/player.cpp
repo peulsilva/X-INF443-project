@@ -198,3 +198,23 @@ void player::take_hit(){
         lists.death = true;
     }
 }
+
+void player::get_weapon(std::vector<std::pair<weapon, vec3>> & weapons){
+    int delete_idx = 0;
+    bool is_near_any = false;
+    for (auto& [w, pos] : weapons){
+        if (norm(pos - position) < 2){
+            is_near_any = true;
+            curr_weapon = w;
+            break;
+        }
+        delete_idx++;
+    }
+
+    // Decrement here
+    if (is_near_any)
+        weapons.erase(weapons.begin() + delete_idx);
+    
+
+    return;
+}

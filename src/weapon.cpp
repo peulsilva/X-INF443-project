@@ -18,7 +18,6 @@ weapon::weapon(weapon_type _type){
         object.initialize_data_on_gpu(
             mesh_load_file_obj("assets/Ak_47/Ak-47.obj")
         );
-        object.material.color = 0.3f * vec3{1, 1, 1};
 
         damage = 50;
 
@@ -35,8 +34,6 @@ weapon::weapon(weapon_type _type){
 
         damage = 30;
 
-        object.material.color = 0.3f * vec3{1, 1, 1};
-
         bullets_in_clip = 15;
         total_bullets = 45;
         max_bullets_in_clip = bullets_in_clip;
@@ -50,8 +47,6 @@ weapon::weapon(weapon_type _type){
         object.initialize_data_on_gpu(
             mesh_load_file_obj("assets/shotgun/sg.obj")
         );
-
-        object.material.color = 0.3f * vec3{1, 1, 1};
 
         bullets_in_clip = 8;
         total_bullets = 32;
@@ -68,12 +63,12 @@ weapon::weapon(weapon_type _type){
             mesh_load_file_obj("assets/ump47.obj")
         );
 
-        object.material.color = 0.3f * vec3{1, 1, 1};
 
         bullets_in_clip = 30;
         total_bullets = 90;
         max_bullets_in_clip = bullets_in_clip;
     }
+    object.material.color = 0.1f * vec3{1, 1, 1};
 
 }
 
@@ -108,7 +103,6 @@ bool weapon::shoot(){
         }
 
         bullets_in_clip-= 1;
-        std::cout << bullets_in_clip << std::endl;
 
         counter = 0;
         return true;
@@ -262,11 +256,11 @@ void weapon::draw_on_scene(
             vec3{1,0,0}
         );
         
-        object.model.translation = {position.x, 0.8, position.z};
+        object.model.translation = {position.x, 0.7, position.z};
 
         // object.model = 100;
         
-        object.model.set_scaling(5e-3f);
+        object.model.set_scaling(3e-3f);
     }
 
     else if (type == handgun){

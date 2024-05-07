@@ -49,6 +49,8 @@ class player{
 
         void take_hit();
 
+        void get_weapon(std::vector<std::pair<weapon, vec3>> & weapons);
+
     private:
         vec3 remove_y_direction(vec3 v);
 };

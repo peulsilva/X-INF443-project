@@ -10,6 +10,10 @@ void scene_structure::initialize()
 {
 	camera_control.initialize(inputs, window); // Give access to the inputs and window global state to the camera controler
 	camera_control.set_rotation_axis_y();
+
+	environment.uniform_generic.uniform_vec3["fog_color"] = 0.3*vec3{1,1,1};
+	environment.background_color = 0.3*vec3{1,1,1};
+	environment.uniform_generic.uniform_int["fog_depth"] = 25;
 	display_info();
 
 	// player
@@ -38,9 +42,9 @@ void scene_structure::initialize()
 	// terrain
 
 	ground.initialize_data_on_gpu(mesh_primitive_quadrangle({ -1.0f, 0.0f, -1.0f }, { -1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, -1.0f }));
-	ground.model.scaling = 50.0f;
+	ground.model.scaling = constants::WORLD_SIZE;
 	ground.model.translation = { 0.0f, 0.0f, 0.0f }; // No translation needed for y-axis up
-	ground.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/checkboard.png");
+	ground.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/grass.jpg");
 
 
 	gui.display_frame = true;
@@ -80,8 +84,8 @@ void scene_structure::display_frame()
 {
 	// Set the light to the current position of the camera
 	environment.light = camera_control.camera_model.position();
-	this_player.curr_weapon.set_fps(std::min(fps_counter->fps, 60));
-	
+	this_player.curr_weapon.set_fps(std::max(fps_counter->fps, 20));
+
 	if (gui.display_frame)
 		draw(global_frame, environment);
 
@@ -89,7 +93,7 @@ void scene_structure::display_frame()
 	glDisable(GL_DEPTH_TEST) ;
 	
 	
-    draw(skybox, environment);
+    // draw(skybox, environment);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -99,6 +103,7 @@ void scene_structure::display_frame()
 
 	for (auto& [w, pos] : weapons){
 		w.draw_on_scene(environment, pos);
+		
 	}
 
 	if (gui.display_wireframe)
@@ -135,6 +140,23 @@ void scene_structure::display_gui()
 	ImGui::Text("----------------------------------------------------");
 	ImGui::End();
 
+	ImGui::Begin("weapons in screen", NULL, 
+		ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground
+	);
+	for (auto& [w, pos]: weapons){
+		if (norm(pos - this_player.position)  <2){
+
+			std::string s = "Press F to get " + w.get_weapon_name();
+			ImGui::SetWindowSize(ImVec2{200, 10});
+			ImGui::Text(s.c_str());
+			ImGui::SetWindowPos({
+				window.screen_resolution_width/2., 
+				window.screen_resolution_height/2.
+			});
+		}
+	}
+	ImGui::End();
+
 }
 
 void scene_structure::mouse_move_event()
@@ -151,12 +173,16 @@ void scene_structure::keyboard_event()
 {
 
 	this_player.move();
+	auto input = camera_control.inputs;
+	if (input->keyboard.is_pressed(GLFW_KEY_F)){
+		this_player.get_weapon(weapons);
+	}
 	camera_control.action_keyboard(environment.camera_view);
 }
 void scene_structure::idle_frame()
 {
 	this_player.handle_mouse_click();
-	spawn_zombies();
+	// spawn_zombies();
 	spawn_weapons();
 	this_player.move();
 	camera_control.idle_frame(environment.camera_view);
@@ -173,6 +199,11 @@ void scene_structure::animate_characters(){
 	for(auto& [name, this_zombie] : zombies) {
 		character_structure& character = this_zombie.character;
 		effect_transition_structure& transition = effect_transition[name];
+
+		if (norm(this_zombie.position - this_player.position) > 20){
+			this_zombie.move(this_player.position, zombies);
+			continue;
+		}
 
 		if (!this_zombie.is_alive)
 			has_dead_zombie = true;
@@ -215,6 +246,9 @@ void scene_structure::animate_characters(){
 	// Compute Skinning deformation
 	// ********************************** //
 	for(auto& [name, zombie] : zombies) {
+		if (norm(zombie.position - this_player.position) > 20){
+			continue;
+		}
 		animated_model_structure& animated_model = zombie.character.animated_model;
 		for(auto& rigged_mesh_entry : animated_model.rigged_mesh) {
 			std::string mesh_name = rigged_mesh_entry.first;
@@ -226,6 +260,9 @@ void scene_structure::animate_characters(){
 	// Display the surface and the skeletons
 	// ************************************** //
 	for(auto& [name, zombie] : zombies) {
+		if (norm(zombie.position - this_player.position) > 20){
+			continue;
+		}
 		character_structure& character = zombie.character;
 		animated_model_structure& animated_model = zombie.character.animated_model;
 
@@ -322,13 +359,14 @@ void scene_structure::spawn_zombies(){
 
 void scene_structure::spawn_weapons(){
 
-	
+	if (weapons.size() >= 3)
+		return;
 	float prob = std::rand() / ((float) RAND_MAX);
 
-	if (prob < 1/2000.){
+	if (prob < 1/1000.){
 
-		int pos_x = std::rand() % 50;
-		int pos_z = std::rand() % 50;
+		int pos_x = std::rand() % (2*constants::WORLD_SIZE) - constants::WORLD_SIZE;
+		int pos_z = std::rand() % (2*constants::WORLD_SIZE) -constants::WORLD_SIZE;
 
 		weapon_type random_weapon = weapon::choose_random_weapon();
 
