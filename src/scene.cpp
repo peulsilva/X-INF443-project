@@ -182,7 +182,7 @@ void scene_structure::keyboard_event()
 void scene_structure::idle_frame()
 {
 	this_player.handle_mouse_click();
-	// spawn_zombies();
+	spawn_zombies();
 	spawn_weapons();
 	this_player.move();
 	camera_control.idle_frame(environment.camera_view);
@@ -359,7 +359,7 @@ void scene_structure::spawn_zombies(){
 
 void scene_structure::spawn_weapons(){
 
-	if (weapons.size() >= 3)
+	if (weapons.size() >= constants::MAX_SPAWN_WEAPONS)
 		return;
 	float prob = std::rand() / ((float) RAND_MAX);
 

@@ -152,6 +152,12 @@ void zombie::move(
 	
 	forward_direction = vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));
 	vec3 delta_position = forward_direction * speed;
+
+	if (norm(position - player_position) > 20){
+		effect_walking.root_position += delta_position;
+		position += delta_position;
+		return;
+	}
 	
 	delta_position = collide_with_player(player_position, delta_position);
 	
