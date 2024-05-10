@@ -13,7 +13,7 @@ void scene_structure::initialize()
 
 	environment.uniform_generic.uniform_vec3["fog_color"] = 0.3*vec3{1,1,1};
 	environment.background_color = 0.3*vec3{1,1,1};
-	environment.uniform_generic.uniform_int["fog_depth"] = 25;
+	environment.uniform_generic.uniform_int["fog_depth"] = constants::FOG_DEPTH;
 	display_info();
 
 	// player
@@ -200,7 +200,7 @@ void scene_structure::animate_characters(){
 		character_structure& character = this_zombie.character;
 		effect_transition_structure& transition = effect_transition[name];
 
-		if (norm(this_zombie.position - this_player.position) > 20){
+		if (norm(this_zombie.position - this_player.position) > constants::MAX_DIST_SPAWN_ZOMBIES){
 			this_zombie.move(this_player.position, zombies);
 			continue;
 		}
@@ -246,7 +246,7 @@ void scene_structure::animate_characters(){
 	// Compute Skinning deformation
 	// ********************************** //
 	for(auto& [name, zombie] : zombies) {
-		if (norm(zombie.position - this_player.position) > 20){
+		if (norm(zombie.position - this_player.position) > constants::MAX_DIST_SPAWN_ZOMBIES){
 			continue;
 		}
 		animated_model_structure& animated_model = zombie.character.animated_model;
@@ -260,7 +260,7 @@ void scene_structure::animate_characters(){
 	// Display the surface and the skeletons
 	// ************************************** //
 	for(auto& [name, zombie] : zombies) {
-		if (norm(zombie.position - this_player.position) > 20){
+		if (norm(zombie.position - this_player.position) > constants::MAX_DIST_SPAWN_ZOMBIES){
 			continue;
 		}
 		character_structure& character = zombie.character;
@@ -296,27 +296,21 @@ void scene_structure::animate_characters(){
 }
 
 void scene_structure::spawn_zombies(){
-	std::vector<vec3> spawn_positions = {
-		vec3(12, 0, 28),
-		vec3(-35, 0, -10),
-		vec3(40, 0, -20),
-		vec3(25, 0, 45),
-		vec3(-8, 0, 30),
-		vec3(3, 0, -40),
-		vec3(-45, 0, 20),
-		vec3(-20, 0, 38),
-		vec3(17, 0, -15),
-		vec3(-30, 0, -45)
-	};
 
 	float prob = std::rand() / ((float) RAND_MAX);
 
 
 
-	if (prob < 1/200.){
+	if (prob < constants::PROBABILITY_SPAWN_ZOMBIES){
 		std::string idx_zombie = std::to_string(zombies_count++);
 
-		int spawn_position_idx = std::rand() % spawn_positions.size();
+		int pos_x = std::rand() % (2*constants::WORLD_SIZE) - constants::WORLD_SIZE;
+		int pos_z = std::rand() % (2*constants::WORLD_SIZE) -constants::WORLD_SIZE;
+
+		while (norm(this_player.position - vec3{pos_x,0,pos_z} ) < constants::MAX_DIST_SPAWN_ZOMBIES){
+			int pos_x = std::rand() % (2*constants::WORLD_SIZE) - constants::WORLD_SIZE;
+			int pos_z = std::rand() % (2*constants::WORLD_SIZE) -constants::WORLD_SIZE;
+		}
 
 		if (zombies.size() >= constants::MAX_ZOMBIES_ON_SCREEN && has_dead_zombie){
 			bool erased_any = false;
@@ -340,8 +334,9 @@ void scene_structure::spawn_zombies(){
 				zombies[idx_zombie]= base_zombie;
 				zombies[idx_zombie].name= idx_zombie;
 				zombies[idx_zombie].show = true;
-				zombies[idx_zombie].position += spawn_positions[spawn_position_idx];	
-				zombies[idx_zombie].effect_walking.root_position += spawn_positions[spawn_position_idx];	
+				zombies[idx_zombie].position += {pos_x, 0, pos_z};	
+				zombies[idx_zombie].effect_walking.root_position += {pos_x, 0, pos_z};	
+				zombies[idx_zombie].is_running = true;
 			}
 			
 			has_dead_zombie = false;
@@ -351,8 +346,10 @@ void scene_structure::spawn_zombies(){
 			zombies[idx_zombie]= base_zombie;
 			zombies[idx_zombie].name= idx_zombie;
 			zombies[idx_zombie].show = true;
-			zombies[idx_zombie].position += spawn_positions[spawn_position_idx];	
-			zombies[idx_zombie].effect_walking.root_position += spawn_positions[spawn_position_idx];	
+			zombies[idx_zombie].position += {pos_x, 0, pos_z};	
+			zombies[idx_zombie].effect_walking.root_position += {pos_x, 0, pos_z};	
+
+			zombies[idx_zombie].is_running = true;
 		}
 	}
 }
@@ -361,9 +358,10 @@ void scene_structure::spawn_weapons(){
 
 	if (weapons.size() >= constants::MAX_SPAWN_WEAPONS)
 		return;
+
 	float prob = std::rand() / ((float) RAND_MAX);
 
-	if (prob < 1/1000.){
+	if (prob < constants::PROBABILITY_SPAWN_WEAPONS){
 
 		int pos_x = std::rand() % (2*constants::WORLD_SIZE) - constants::WORLD_SIZE;
 		int pos_z = std::rand() % (2*constants::WORLD_SIZE) -constants::WORLD_SIZE;

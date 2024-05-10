@@ -8,9 +8,11 @@ zombie::zombie(vec3 _position, std::string _name){
 	name = _name;
     position = _position;
 
-	speed = constants::ENEMY_SPEED;
     character = load_character_zombie();
+
 	character.set_current_animation("Walk");
+	speed = constants::ENEMY_SPEED_WALKING;	
+	
     effect_walking.root_position = position + vec3{0,0.9,0};
 	
 }
@@ -21,7 +23,7 @@ zombie::zombie(vec3 _position, std::string _name, bool _show){
 
 	show = false;
 
-	speed = constants::ENEMY_SPEED;
+	speed = constants::ENEMY_SPEED_WALKING;
     character = load_character_zombie();
 	character.set_current_animation("Walk");
     effect_walking.root_position = position + vec3{0,0.9,0};
@@ -89,6 +91,11 @@ void zombie::move(
 {   
 	if (! show)
 		return;
+
+	if (character.current_animation_name.compare("Walk") == 0 && is_running){
+		character.set_current_animation("Run");
+		speed = constants::ENEMY_SPEED_RUNNING;
+	}
 	if (!is_alive || was_hit){
 
 		vec3 forward_direction = vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));
@@ -106,7 +113,16 @@ void zombie::move(
 			
 			if (was_hit){
 				was_hit = false;
-				character.set_current_animation("Walk");
+				
+				if (is_running){
+					character.set_current_animation("Run");
+					speed = constants::ENEMY_SPEED_RUNNING;	
+				}
+
+				else{
+					character.set_current_animation("Walk");
+					speed = constants::ENEMY_SPEED_WALKING;	
+				}
 			}
 		}
 		

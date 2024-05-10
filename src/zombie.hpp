@@ -19,6 +19,8 @@ class zombie {
 
         int health = 100;
 
+        bool is_running = false;
+
         std::string name;
 
         bool is_alive = true;
