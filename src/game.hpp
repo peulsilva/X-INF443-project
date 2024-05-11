@@ -20,7 +20,7 @@ using cgp::mesh_drawable;
 struct gui_parameters {
 	bool display_frame = true;
 	bool display_wireframe = false;
-	ImVec2 weapon_window_size = {300, 100};
+	ImVec2 weapon_window_size = {300, 200};
 	ImVec2 helper_window_size = {50,50};
 };
 

@@ -94,6 +94,13 @@ void player::move(){
     }
 
     direction = collide_with_zombie(direction);
+
+    if (std::abs(position.x + direction.x) >= 0.95*constants::WORLD_SIZE)
+        direction.x = 0;
+
+    if (std::abs(position.z + direction.z) >= 0.95*constants::WORLD_SIZE)
+        direction.z = 0;
+        
     position += direction;
     camera_position+= direction;
 

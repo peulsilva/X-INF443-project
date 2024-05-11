@@ -138,6 +138,9 @@ void game::display_gui()
 	weapon_info += " / ";
 	weapon_info += std::to_string(this_player.curr_weapon.total_bullets);
 	ImGui::Text(weapon_info.c_str());
+	std::string health_info = "Health   " +  std::to_string((int)this_player.health);
+	health_info += " / 100";
+	ImGui::Text(health_info.c_str());
 	ImGui::Text("----------------------------------------------------");
 	ImGui::End();
 
