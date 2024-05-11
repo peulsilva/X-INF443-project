@@ -49,7 +49,7 @@ class player{
 
         void take_hit();
 
-        void get_weapon(std::vector<std::pair<weapon, vec3>> & weapons);
+        void get_weapon(std::vector<std::pair<weapon, vec3>> & weapons, std::vector<vec3> & weapon_pos);
 
     private:
         vec3 remove_y_direction(vec3 v);

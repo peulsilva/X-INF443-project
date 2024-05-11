@@ -190,16 +190,17 @@ void player::take_hit(){
     if (health > 0)
         lists.take_hit = true;
 
-    std::cout << health << std::endl;
     if (health < 0){
         is_alive = false;
         camera->camera_model.position_camera -= {0, 0.7, 0};
-        std::cout << camera->camera_model.position_camera << std::endl;
         lists.death = true;
     }
 }
 
-void player::get_weapon(std::vector<std::pair<weapon, vec3>> & weapons){
+void player::get_weapon(
+    std::vector<std::pair<weapon, vec3>> & weapons,
+    std::vector<vec3> & weapon_pos
+){
     int delete_idx = 0;
     bool is_near_any = false;
     for (auto& [w, pos] : weapons){
@@ -212,8 +213,10 @@ void player::get_weapon(std::vector<std::pair<weapon, vec3>> & weapons){
     }
 
     // Decrement here
-    if (is_near_any)
+    if (is_near_any){
         weapons.erase(weapons.begin() + delete_idx);
+        weapon_pos.erase(weapon_pos.begin() + delete_idx) ; 
+    }
     
 
     return;

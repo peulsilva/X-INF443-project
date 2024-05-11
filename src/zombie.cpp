@@ -71,7 +71,6 @@ void zombie::get_shot(int weapon_damage){
 
 		character.timer.t_periodic = 0;
 
-		std::cout << effect_walking.root_angle << std::endl;
 		if (!was_hit){
 			
 			rotation_transform r = rotation_axis_angle(vec3(0.0f, 1.0f, 0.0f), effect_walking.root_angle);
