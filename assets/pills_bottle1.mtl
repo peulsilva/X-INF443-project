@@ -1,0 +1,14 @@
+# Blender 3.4.1 MTL File: 'pills_bottle1.blend'
+# www.blender.org
+
+newmtl pills_bottle1_material
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd pills_bottle1_material_Base_Color.png
+map_Ns pills_bottle1_material_Roughness.png
+map_refl pills_bottle1_material_Metallic.png
+map_Bump -bm 1.000000 pills_bottle1_material_Normal_OpenGL.png

@@ -52,10 +52,10 @@ void minimap::update(int player_x, int player_z){
 
 
     scaled_x = std::max(scaled_x, 1);
-    scaled_x = std::min(height - 1, scaled_x);
+    scaled_x = std::min(height - 2, scaled_x);
 
     scaled_z = std::max(scaled_z, 1);
-    scaled_z = std::min(width - 1, scaled_z);
+    scaled_z = std::min(width - 2, scaled_z);
 
     // verificar scaled_x e scaled_z
     // if (prev_player_x > player_x)
@@ -97,12 +97,28 @@ void minimap::add_weapons(std::vector<vec3>& weapon_pos){
         int scaled_z = (pos.z + constants::WORLD_SIZE) * width / (2*constants::WORLD_SIZE);
 
         scaled_x = std::max(scaled_x, 1);
-        scaled_x = std::min(height - 1, scaled_x);
+        scaled_x = std::min(height - 2, scaled_x);
 
         scaled_z = std::max(scaled_z, 1);
-        scaled_z = std::min(width - 1, scaled_z);
+        scaled_z = std::min(width - 2, scaled_z);
 
         map[scaled_x][scaled_z] ='w';
     }
 
+}
+
+void minimap::add_medicine(std::vector<vec3>& medicine_position){
+    for (auto& pos: medicine_position){
+
+        int scaled_x = (-pos.x + constants::WORLD_SIZE)* height / (2*constants::WORLD_SIZE) ;
+        int scaled_z = (pos.z + constants::WORLD_SIZE) * width / (2*constants::WORLD_SIZE);
+
+        scaled_x = std::max(scaled_x, 1);
+        scaled_x = std::min(height - 2, scaled_x);
+
+        scaled_z = std::max(scaled_z, 1);
+        scaled_z = std::min(width - 2, scaled_z);
+
+        map[scaled_x][scaled_z] ='+';
+    }
 }

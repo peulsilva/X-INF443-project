@@ -4,6 +4,7 @@
 #include "utils.hpp"
 #include "zombie.hpp"
 #include "weapon.hpp"
+#include "medicine.hpp"
 #include <unordered_map>
 
 using namespace cgp;
@@ -50,6 +51,8 @@ class player{
         void take_hit();
 
         void get_weapon(std::vector<std::pair<weapon, vec3>> & weapons, std::vector<vec3> & weapon_pos);
+
+        void heal(std::vector<medicine>& medicines, std::vector<vec3>& medicine_pos);
 
     private:
         vec3 remove_y_direction(vec3 v);

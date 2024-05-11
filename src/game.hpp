@@ -7,10 +7,9 @@
 #include "player.hpp"
 #include "zombie.hpp"
 #include "minimap.hpp"
-
+#include "medicine.hpp"
 #include "animated_character/animated_character.hpp"
 #include "effects/effects.hpp"
-
 
 using cgp::mesh_drawable;
 
@@ -49,6 +48,11 @@ struct game : cgp::scene_inputs_generic {
 
 	std::unordered_map<weapon_type, weapon> base_weapons;
 	zombie base_zombie;
+
+	medicine base_medicine;
+
+	std::vector<medicine> medicines;
+	std::vector<vec3> medicine_positions;
 
 	bool has_dead_zombie; 
 	
@@ -91,8 +95,8 @@ struct game : cgp::scene_inputs_generic {
 	void idle_frame();
 
 	void spawn_zombies();
-
 	void spawn_weapons();
+	void spawn_medicine();
 
 	void display_info();
 

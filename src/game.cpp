@@ -58,6 +58,8 @@ void game::initialize()
 		{shotgun, weapon(shotgun)},
 		{smg, weapon(smg)}
 	};
+
+	base_medicine = medicine({0,0,0});
 	
 	current_active_zombie = "1";
 
@@ -105,6 +107,10 @@ void game::display_frame()
 	for (auto& [w, pos] : weapons){
 		w.draw_on_scene(environment, pos);
 		
+	}
+
+	for (int i = 0 ; i < medicines.size(); i++){
+		medicines[i].draw(environment, gui.display_wireframe);
 	}
 
 	if (gui.display_wireframe)
@@ -161,12 +167,32 @@ void game::display_gui()
 	}
 	ImGui::End();
 
+	ImGui::Begin("medicines in screen", NULL, 
+		ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground
+	);
+	for (int i = 0; i < medicines.size(); i++){
+		vec3 pos = medicine_positions[i];
+
+		if (norm(pos - this_player.position) <2){
+
+			std::string s = "Press F to heal.";
+			ImGui::SetWindowSize(ImVec2{200, 10});
+			ImGui::Text(s.c_str());
+			ImGui::SetWindowPos({
+				window.screen_resolution_width/2., 
+				window.screen_resolution_height/2.
+			});
+		}
+	}
+	ImGui::End();
+
 
 	ImGui::Begin("minimap", NULL, 
 		ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground
 	);
 
 	mini_map.add_weapons(weapon_pos);
+	mini_map.add_medicine(medicine_positions);
 	mini_map.update(this_player.position.x, this_player.position.z);
 
 	ImGui::SetWindowSize(ImVec2{400, 800});
@@ -198,14 +224,24 @@ void game::keyboard_event()
 	auto input = camera_control.inputs;
 	if (input->keyboard.is_pressed(GLFW_KEY_F)){
 		this_player.get_weapon(weapons, weapon_pos);
+
+		this_player.heal(medicines, medicine_positions);
 	}
 	camera_control.action_keyboard(environment.camera_view);
 }
 void game::idle_frame()
 {
 	this_player.handle_mouse_click();
-	// spawn_zombies();
-	spawn_weapons();
+
+	if (constants::SHOULD_SPAWN_ZOMBIES)
+		spawn_zombies();
+	
+	if (constants::SHOULD_SPAWN_WEAPONS)
+		spawn_weapons();
+
+	if (constants::SHOULD_SPAWN_MEDICINES)
+		spawn_medicine();
+
 	this_player.move();
 	camera_control.idle_frame(environment.camera_view);
 }
@@ -385,8 +421,8 @@ void game::spawn_weapons(){
 
 	if (prob < constants::PROBABILITY_SPAWN_WEAPONS){
 
-		int pos_x = std::rand() % (2*constants::WORLD_SIZE) - constants::WORLD_SIZE;
-		int pos_z = std::rand() % (2*constants::WORLD_SIZE) -constants::WORLD_SIZE;
+		int pos_x = std::rand() % (2*constants::ACESSIBLE_AREA) - constants::ACESSIBLE_AREA;
+		int pos_z = std::rand() % (2*constants::ACESSIBLE_AREA) -constants::ACESSIBLE_AREA;
 
 		weapon_type random_weapon = weapon::choose_random_weapon();
 
@@ -394,6 +430,29 @@ void game::spawn_weapons(){
 		weapons.push_back({this_weapon, {pos_x, 0, pos_z}});
 
 		weapon_pos.push_back({pos_x, 0, pos_z});
+
+	}
+}
+
+void game::spawn_medicine(){
+	if (medicines.size() >= constants::MAX_SPAWN_MEDICINE){
+		return;
+	}
+
+	float prob = std::rand() / ((float) RAND_MAX);
+
+	if (prob < constants::PROBABILITY_SPAWN_MEDICINES){
+
+		int pos_x = std::rand() % (2*constants::ACESSIBLE_AREA) - constants::ACESSIBLE_AREA;
+		int pos_z = std::rand() % (2*constants::ACESSIBLE_AREA) -constants::ACESSIBLE_AREA;
+	
+
+		medicine this_medicine = base_medicine;
+		this_medicine.position += {pos_x, 0, pos_z};
+
+		medicines.push_back(this_medicine);
+
+		medicine_positions.push_back({pos_x, 0, pos_z});
 
 	}
 }

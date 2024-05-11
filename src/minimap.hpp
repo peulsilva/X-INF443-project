@@ -22,5 +22,7 @@ class minimap{
 
         void add_weapons(std::vector<vec3>& weapon_pos);
 
+        void add_medicine(std::vector<vec3>& medicine_position);
+
         void print();
 };

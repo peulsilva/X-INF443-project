@@ -95,12 +95,12 @@ void player::move(){
 
     direction = collide_with_zombie(direction);
 
-    if (std::abs(position.x + direction.x) >= 0.95*constants::WORLD_SIZE)
+    if (std::abs(position.x + direction.x) >= constants::ACESSIBLE_AREA)
         direction.x = 0;
 
-    if (std::abs(position.z + direction.z) >= 0.95*constants::WORLD_SIZE)
+    if (std::abs(position.z + direction.z) >= constants::ACESSIBLE_AREA)
         direction.z = 0;
-        
+
     position += direction;
     camera_position+= direction;
 
@@ -223,6 +223,35 @@ void player::get_weapon(
     if (is_near_any){
         weapons.erase(weapons.begin() + delete_idx);
         weapon_pos.erase(weapon_pos.begin() + delete_idx) ; 
+    }
+    
+
+    return;
+}
+
+void player::heal(
+    std::vector<medicine>& medicines, 
+    std::vector<vec3>& medicine_pos
+){
+    int delete_idx = 0;
+    bool is_near_any = false;
+
+    for (int i = 0; i < medicines.size(); i ++){
+
+        vec3 pos = medicine_pos[i];
+
+        if (norm(pos - position) < 2){
+            is_near_any = true;
+            health = 100;
+            break;
+        }
+        delete_idx++;
+    }
+
+    // Decrement here
+    if (is_near_any){
+        medicines.erase(medicines.begin() + delete_idx);
+        medicine_pos.erase(medicine_pos.begin() + delete_idx) ; 
     }
     
 
