@@ -15,7 +15,7 @@ class player{
         camera_controller_first_person_euler *camera;
 
         float velocity;
-        float health = 100;
+        float health = 1;
         bool is_alive = true;
 
         bool use_hit_timeout_counter = false;

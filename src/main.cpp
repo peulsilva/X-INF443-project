@@ -26,7 +26,11 @@ void animation_loop();
 void display_gui_default();
 
 bool render_menu = true;
+bool game_over = false;
+bool reset_game = false;
 int menu_timer = 0;
+int restart_game_timer = 0;
+int restart_game_timeout = 50;
 int menu_timeout = 50;
 
 timer_fps fps_record;
@@ -75,6 +79,56 @@ void main_menu(){
 	ImGui::Text("Good luck and have fun!");
 	ImGui::Text(" ");
 	ImGui::Text(" ");
+
+
+
+	ImGui::SetWindowSize(window_size);
+	ImGui::SetWindowPos({
+		(float)(game_.window.width - window_size.x)/2.0f,
+		(float)(game_.window.height - window_size.y)/2.0f,
+	});
+	ImGui::End();
+
+	// End of ImGui display and handle GLFW events
+	imgui_render_frame(game_.window.glfw_window);
+	glfwSwapBuffers(game_.window.glfw_window);
+	glfwPollEvents();
+
+}
+
+void game_over_screen(){
+	emscripten_update_window_size(game_.window.width, game_.window.height); // update window size in case of use of emscripten (not used by default)
+    glfwSetInputMode(game_.window.glfw_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+	game_.camera_projection.aspect_ratio = game_.window.aspect_ratio();
+	game_.environment.camera_projection = game_.camera_projection.matrix();
+	glViewport(0, 0, game_.window.width, game_.window.height);
+
+	vec3 const& background_color = 0.*vec3{1,1,1};
+	glClearColor(background_color.x, background_color.y, background_color.z, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+
+	float const time_interval = fps_record.update();
+	glfwSetWindowTitle(game_.window.glfw_window, "X-zombies");
+
+	imgui_create_frame();
+	ImGui::GetIO().FontGlobalScale = project::gui_scale;
+	game_.inputs.mouse.on_gui = ImGui::GetIO().WantCaptureMouse;
+	game_.inputs.time_interval = time_interval;
+
+	ImVec2 window_size(500, 600);
+	ImGui::Begin("X-zombies", NULL, 
+		ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground
+	);
+
+	ImGui::SetWindowFontScale(2);
+	ImGui::Text("--------------------------");
+	ImGui::Text("You are dead");
+	ImGui::Text("Press any key to restart");
+	ImGui::Text("--------------------------");
+
 
 
 
@@ -144,7 +198,28 @@ int main(int, char* argv[])
 
 		menu_timer++;	
 		game_.fps_counter = &fps_record;
-		if (render_menu){
+
+		if (game_.game_over){
+			game_over = true;
+		}
+
+		if (game_over){
+			restart_game_timer++;
+
+			game_over_screen();
+
+			if (reset_game){
+				render_menu = true;
+
+				game_.restart();
+
+				reset_game = false;
+				game_over = false;
+				menu_timer = 0;
+			}
+		}
+
+		else if (render_menu){
 			main_menu();
 		}
 
@@ -326,6 +401,11 @@ void mouse_click_callback(GLFWwindow* window, int button, int action, int mods)
 		render_menu = false;
 		return;
 	}
+
+	if (game_over){
+		reset_game = true;
+		return;
+	}
 	game_.inputs.mouse.click.update_from_glfw_click(button, action);
 	game_.mouse_click_event();
 }
@@ -336,7 +416,7 @@ void mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
 
 	game_.inputs.mouse.scroll = yoffset;
-	game_.mouse_scroll_event();
+	// game_.mouse_scroll_event();
 }
 
 // This function is called everytime a keyboard touch is pressed/released
@@ -358,6 +438,11 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 		if (key == GLFW_KEY_P && menu_timer >= menu_timeout){
 			menu_timer = 0;
 			render_menu = true;
+		}
+
+		if (game_over && restart_game_timer >= restart_game_timeout){
+			reset_game = true;
+			restart_game_timer = 0;
 		}
 		// Press 'F' for full screen mode
 		if (key == GLFW_KEY_F && action == GLFW_PRESS && game_.inputs.keyboard.shift) {

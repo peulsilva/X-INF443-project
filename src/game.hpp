@@ -24,8 +24,8 @@ struct gui_parameters {
 };
 
 // The structure of the custom scene
-struct game : cgp::scene_inputs_generic {
-	
+class game : cgp::scene_inputs_generic {
+	public:
 	// ****************************** //
 	// Elements and shapes of the scene
 	// ****************************** //
@@ -41,6 +41,8 @@ struct game : cgp::scene_inputs_generic {
 
 	std::vector<mesh_drawable> shapes;
 
+	bool game_over = false;
+
 	// Special camera mode adapted to a 2D displacement mode
 	camera_controller camera_control;
 
@@ -55,6 +57,9 @@ struct game : cgp::scene_inputs_generic {
 	std::vector<vec3> medicine_positions;
 
 	bool has_dead_zombie; 
+
+	int n_dead_zombies= 0;
+	int level = 1;
 	
 	std::string current_active_zombie;
 
@@ -83,11 +88,15 @@ struct game : cgp::scene_inputs_generic {
 	// Functions
 	// ****************************** //
 
+
 	void initialize();    // Standard initialization to be called before the animation loop
+	void restart();
 	void display_frame(); // The frame display to be called within the animation loop
 	void display_gui();   // The display of the GUI, also called within the animation loop
 	void animate_characters();
 
+	game(const game& other);
+	game();
 
 	void mouse_move_event();
 	void mouse_click_event();
@@ -99,8 +108,11 @@ struct game : cgp::scene_inputs_generic {
 	void spawn_medicine();
 
 	void display_info();
+	
 
 };
+
+
 
 
 

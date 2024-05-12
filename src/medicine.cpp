@@ -9,7 +9,6 @@ medicine::medicine(vec3 _position){
 
     position= _position;
 
-    // object.material.color = 0.1f * vec3{1, 1, 1};
 }
 
 medicine::medicine(){}

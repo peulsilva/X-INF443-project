@@ -6,8 +6,21 @@ using namespace cgp;
 
 #include "character_loader/character_loader.hpp"
 
+game::game(){}
+game::game(const game & other){}
+
 void game::initialize()
 {
+	// starting variables
+
+	weapons = {};
+	weapon_pos = {};
+	medicines = {};
+	medicine_positions = {};
+	has_dead_zombie = false;
+	zombies = {};
+
+
 	camera_control.initialize(inputs, window); // Give access to the inputs and window global state to the camera controler
 	camera_control.set_rotation_axis_y();
 
@@ -24,14 +37,14 @@ void game::initialize()
 
 	global_frame.initialize_data_on_gpu(mesh_primitive_frame());
 
-	// skybox
+	// // skybox
 
-	image_structure image_skybox = image_load_file("assets/skybox.jpg");
+	// image_structure image_skybox = image_load_file("assets/skybox.jpg");
 
-	std::vector<image_structure> image_grid = image_split_grid(image_skybox, 4, 3);
+	// std::vector<image_structure> image_grid = image_split_grid(image_skybox, 4, 3);
 
-	skybox.initialize_data_on_gpu();
-	skybox.texture.initialize_cubemap_on_gpu(image_grid[1], image_grid[7], image_grid[5], image_grid[3], image_grid[10], image_grid[4]);
+	// skybox.initialize_data_on_gpu();
+	// skybox.texture.initialize_cubemap_on_gpu(image_grid[1], image_grid[7], image_grid[5], image_grid[3], image_grid[10], image_grid[4]);
 
 
 	// auto struct_shape = mesh_load_file_obj_advanced(project::path + "assets/worlds/holodeck/", "holodeck.obj");
@@ -68,6 +81,21 @@ void game::initialize()
 
 }
 
+void game::restart(){
+	weapons = {};
+	weapon_pos = {};
+	medicines = {};
+	medicine_positions = {};
+	zombies = {};
+	has_dead_zombie = false;
+	game_over = false;
+
+	this_player = player(vec3{0,0,0,}, camera_control, zombies);
+
+	mini_map = minimap();
+
+}
+
 void game::display_info()
 {
 	std::cout << "\nCAMERA CONTROL:" << std::endl;
@@ -89,6 +117,10 @@ void game::display_frame()
 	environment.light = camera_control.camera_model.position();
 	this_player.curr_weapon.set_fps(std::max(fps_counter->fps, 20));
 
+	if (!this_player.is_alive){
+		game_over = true;
+	}
+
 	if (gui.display_frame)
 		draw(global_frame, environment);
 
@@ -99,8 +131,6 @@ void game::display_frame()
     // draw(skybox, environment);
 
 	glEnable(GL_DEPTH_TEST);
-
-	
 
 	draw(ground, environment);
 
