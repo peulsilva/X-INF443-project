@@ -15,11 +15,19 @@ class player{
         camera_controller_first_person_euler *camera;
 
         float velocity;
-        float health = 1;
+        float health = 100;
         bool is_alive = true;
 
+        int fps = 60;
+
+        int points= 0 ;
+        int n_kills = 0;
+
+        int n_shots = 0;
+        int correct_shots = 0;
+
         bool use_hit_timeout_counter = false;
-        int hit_timeout = 100;
+        int hit_timeout = 1.6*fps;
         int timeout_counter = 0;
 
         // mesh_drawable weapon;
@@ -47,6 +55,8 @@ class player{
         vec3 collide_with_zombie(vec3 moving_direction);
 
         vec3 restrict_movement(vec3 zombie_pos, vec3 moving_direction);
+
+        void set_fps(int _fps);
 
         void take_hit();
 

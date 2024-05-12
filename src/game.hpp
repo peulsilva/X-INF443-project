@@ -19,7 +19,7 @@ using cgp::mesh_drawable;
 struct gui_parameters {
 	bool display_frame = true;
 	bool display_wireframe = false;
-	ImVec2 weapon_window_size = {300, 200};
+	ImVec2 weapon_window_size = {300, 300};
 	ImVec2 helper_window_size = {50,50};
 };
 
@@ -58,8 +58,11 @@ class game : cgp::scene_inputs_generic {
 
 	bool has_dead_zombie; 
 
-	int n_dead_zombies= 0;
 	int level = 1;
+
+	// zombies will not spawn until new_level_count >= new_level_timeout
+	int new_level_count = 0;
+	int new_level_timeout = 100;
 	
 	std::string current_active_zombie;
 
@@ -97,6 +100,10 @@ class game : cgp::scene_inputs_generic {
 
 	game(const game& other);
 	game();
+
+	int get_num_zombies_for_level(int _level);
+	int get_total_zombies_at_end_of_level(int _level);
+	bool is_level_over(int _level);
 
 	void mouse_move_event();
 	void mouse_click_event();

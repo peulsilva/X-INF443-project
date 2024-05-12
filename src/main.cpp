@@ -12,7 +12,29 @@
 #include "game.hpp"
 
 
-
+std::string to_string_with_precision(const double value, const int precision = 2) {
+    // Convert the double to string
+    std::string str = std::to_string(value);
+    
+    // Find the position of the decimal point
+    size_t decimal_pos = str.find('.');
+    
+    // If decimal_pos is not found, append ".00" to the end
+    if (decimal_pos == std::string::npos) {
+        str += '.';
+        str += std::string(precision, '0');
+    } else {
+        // Adjust precision by adding zeros or truncating
+        size_t length = str.size();
+        if (length > decimal_pos + precision + 1) {
+            str = str.substr(0, decimal_pos + precision + 1);
+        } else {
+            str += std::string(decimal_pos + precision + 1 - length, '0');
+        }
+    }
+    
+    return str;
+}
 
 // *************************** //
 // Custom game_ defined in "game_.hpp"
@@ -119,13 +141,24 @@ void game_over_screen(){
 	game_.inputs.time_interval = time_interval;
 
 	ImVec2 window_size(500, 600);
-	ImGui::Begin("X-zombies", NULL, 
+	ImGui::Begin("restart", NULL, 
 		ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground
 	);
 
-	ImGui::SetWindowFontScale(2);
+	// ImGui::SetWindowFontScale(2);
 	ImGui::Text("--------------------------");
 	ImGui::Text("You are dead");
+	std::string round_stat = "You arrived at round " + std::to_string(game_.level); 
+	ImGui::Text(round_stat.c_str());
+
+	std::string points_stat = "You got " + std::to_string(game_.this_player.points) + " points";
+	ImGui::Text(points_stat.c_str());
+
+	std::string kills_stat = "You killed " + std::to_string(game_.this_player.n_kills) + " zombies. Your correct shot ratio was ";
+	std::string ratio  = to_string_with_precision(game_.this_player.correct_shots/((float)game_.this_player.n_shots));
+	kills_stat += ratio ;
+	ImGui::Text(kills_stat.c_str());
+
 	ImGui::Text("Press any key to restart");
 	ImGui::Text("--------------------------");
 
@@ -268,9 +301,12 @@ void animation_loop()
 		glfwSetWindowTitle(game_.window.glfw_window, title.c_str());
 	}
 
+	std::cout << "Starting frame" << std::endl;
 	imgui_create_frame();
 	ImGui::GetIO().FontGlobalScale = project::gui_scale;
 	// ImGui::Begin("GUI", NULL, ImGuiWindowFlags_NoDecoration);
+
+
 	
 	game_.inputs.mouse.on_gui = ImGui::GetIO().WantCaptureMouse;
 	game_.inputs.time_interval = time_interval;
@@ -278,19 +314,24 @@ void animation_loop()
 
 	// Display the ImGUI interface (button, sliders, etc)
 	display_gui_default();
+
 	game_.display_gui();
+	std::cout << "passed gui" << std::endl;
 
 	// Handle camera behavior in standard frame
 	game_.idle_frame();
+	std::cout << "passed idle frame" << std::endl;
 
 	// Call the display of the game_
 	game_.display_frame();
+	std::cout << "passed display frame" << std::endl;
 
 
 	// End of ImGui display and handle GLFW events
 	imgui_render_frame(game_.window.glfw_window);
 	glfwSwapBuffers(game_.window.glfw_window);
 	glfwPollEvents();
+	std::cout << "ending animation loop" << std::endl;
 }
 
 
@@ -397,12 +438,12 @@ void mouse_click_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
 	
-	if (render_menu){
+	if (render_menu && menu_timer >= menu_timeout){
 		render_menu = false;
 		return;
 	}
 
-	if (game_over){
+	if (game_over && restart_game_timer >= restart_game_timeout){
 		reset_game = true;
 		return;
 	}

@@ -139,18 +139,28 @@ void player::handle_mouse_click(){
         bool is_shot = curr_weapon.shoot();
 
         if (is_shot){
-
+            n_shots ++;
             for (auto&[name, _zombie]: *zombies){
 
                 // checking horizontal hit 
+                if (!_zombie.is_alive)
+                    continue;
                 vec3 v1 = utils::remove_y_direction(_zombie.position - position);
                 vec3 v2 = utils::remove_y_direction(looking_at());
                 float dist = norm(_zombie.position - position);
                 float angle = acos(dot(v1, v2)) * 180/ constants::PI;
                 
                 if (angle < 10/dist){
+                    correct_shots++;
                     int damage = curr_weapon.get_damage(_zombie.position, position);
-                    _zombie.get_shot(damage); 
+                    _zombie.get_shot(damage);
+                    if (_zombie.is_alive)
+                        points+= 10;
+
+                    else {
+                        points+= 50; 
+                        n_kills++;
+                    }
                 }
 
                 // TODO: check vertical hit 
@@ -256,4 +266,11 @@ void player::heal(
     
 
     return;
+}
+
+void player::set_fps(int _fps){
+    fps = _fps;
+    hit_timeout = 1.6*fps;
+
+    curr_weapon.set_fps(fps);
 }

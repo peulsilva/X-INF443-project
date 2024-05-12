@@ -17,7 +17,7 @@ namespace constants {
     const int FOG_DEPTH = 25;
 
     // spawns 
-    const int MAX_SPAWN_WEAPONS = 5;
+    const int MAX_SPAWN_WEAPONS = 3;
     const int MAX_SPAWN_MEDICINE = 3;
     const int MAX_DIST_SPAWN_ZOMBIES = 20;
     const float PROBABILITY_SPAWN_ZOMBIES = 1/200.;
@@ -26,7 +26,11 @@ namespace constants {
 
     // minimap
     const int MINIMAP_WIDTH = 50;
-    const int MINIMAP_HEIGHT = 25;
+    const int MINIMAP_HEIGHT = 15;
+
+    // levels
+
+    const int RATIO_ZOMBIES_PER_LEVEL = 3;
 
     // debug
 

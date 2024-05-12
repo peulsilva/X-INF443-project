@@ -89,6 +89,7 @@ void game::restart(){
 	zombies = {};
 	has_dead_zombie = false;
 	game_over = false;
+	level = 1;
 
 	this_player = player(vec3{0,0,0,}, camera_control, zombies);
 
@@ -115,7 +116,24 @@ void game::display_frame()
 {
 	// Set the light to the current position of the camera
 	environment.light = camera_control.camera_model.position();
-	this_player.curr_weapon.set_fps(std::max(fps_counter->fps, 20));
+	this_player.set_fps(std::max(fps_counter->fps, 20));
+
+	new_level_count++;
+
+	if (constants::SHOULD_SPAWN_ZOMBIES && new_level_count>= new_level_timeout)
+		spawn_zombies();
+	
+	if (constants::SHOULD_SPAWN_WEAPONS)
+		spawn_weapons();
+
+	if (constants::SHOULD_SPAWN_MEDICINES)
+		spawn_medicine();
+
+
+	if (is_level_over(level)){
+		level++;
+		new_level_count = 0;
+	}
 
 	if (!this_player.is_alive){
 		game_over = true;
@@ -126,9 +144,6 @@ void game::display_frame()
 
 	
 	glDisable(GL_DEPTH_TEST) ;
-	
-	
-    // draw(skybox, environment);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -143,13 +158,16 @@ void game::display_frame()
 		medicines[i].draw(environment, gui.display_wireframe);
 	}
 
+
 	if (gui.display_wireframe)
 		draw_wireframe(ground, environment);
 
 	animate_characters();
 
+
     glClear(GL_DEPTH_BUFFER_BIT);
 	this_player.draw(environment, gui.display_wireframe);
+
 	
 	
 }
@@ -174,9 +192,17 @@ void game::display_gui()
 	weapon_info += " / ";
 	weapon_info += std::to_string(this_player.curr_weapon.total_bullets);
 	ImGui::Text(weapon_info.c_str());
+
 	std::string health_info = "Health   " +  std::to_string((int)this_player.health);
 	health_info += " / 100";
 	ImGui::Text(health_info.c_str());
+
+	std::string points = "Points " + std::to_string(this_player.points);
+	ImGui::Text(points.c_str());
+
+	std::string level_info = "Round " + std::to_string(level);
+	ImGui::Text(level_info.c_str());
+
 	ImGui::Text("----------------------------------------------------");
 	ImGui::End();
 
@@ -239,7 +265,6 @@ void game::display_gui()
 
 void game::mouse_move_event()
 {
-	
 	camera_control.action_mouse_move(environment.camera_view);
 }
 void game::mouse_click_event()
@@ -262,15 +287,6 @@ void game::keyboard_event()
 void game::idle_frame()
 {
 	this_player.handle_mouse_click();
-
-	if (constants::SHOULD_SPAWN_ZOMBIES)
-		spawn_zombies();
-	
-	if (constants::SHOULD_SPAWN_WEAPONS)
-		spawn_weapons();
-
-	if (constants::SHOULD_SPAWN_MEDICINES)
-		spawn_medicine();
 
 	this_player.move();
 	camera_control.idle_frame(environment.camera_view);
@@ -386,8 +402,11 @@ void game::animate_characters(){
 void game::spawn_zombies(){
 
 	float prob = std::rand() / ((float) RAND_MAX);
+	bool should_spawn = true;
 
-
+	if (this_player.n_kills + zombies.size() == get_total_zombies_at_end_of_level(level)){
+		should_spawn = false;
+	}
 
 	if (prob < constants::PROBABILITY_SPAWN_ZOMBIES){
 		std::string idx_zombie = std::to_string(zombies_count++);
@@ -396,8 +415,10 @@ void game::spawn_zombies(){
 		int pos_z = std::rand() % (2*constants::WORLD_SIZE) -constants::WORLD_SIZE;
 
 		while (norm(this_player.position - vec3{pos_x,0,pos_z} ) < constants::MAX_DIST_SPAWN_ZOMBIES){
-			int pos_x = std::rand() % (2*constants::WORLD_SIZE) - constants::WORLD_SIZE;
-			int pos_z = std::rand() % (2*constants::WORLD_SIZE) -constants::WORLD_SIZE;
+			std::cout << "error in initializing zombie" << std::endl;
+			
+			pos_x = std::rand() % (2*constants::WORLD_SIZE) - constants::WORLD_SIZE;
+			pos_z = std::rand() % (2*constants::WORLD_SIZE) -constants::WORLD_SIZE;
 		}
 
 		if (zombies.size() >= constants::MAX_ZOMBIES_ON_SCREEN && has_dead_zombie){
@@ -417,7 +438,9 @@ void game::spawn_zombies(){
 				zombies.erase(n);
 			}
 
-			if (erased_any){
+			
+
+			if (erased_any && should_spawn){
 				// zombies[idx_zombie]= zombie(spawn_positions[spawn_position_idx], idx_zombie);	
 				zombies[idx_zombie]= base_zombie;
 				zombies[idx_zombie].name= idx_zombie;
@@ -430,10 +453,11 @@ void game::spawn_zombies(){
 			has_dead_zombie = false;
 		}
 
-		else if (zombies.size() < constants::MAX_ZOMBIES_ON_SCREEN){
+		else if (zombies.size() < constants::MAX_ZOMBIES_ON_SCREEN && should_spawn){
 			zombies[idx_zombie]= base_zombie;
 			zombies[idx_zombie].name= idx_zombie;
 			zombies[idx_zombie].show = true;
+			zombies[idx_zombie].health += level*10;
 			zombies[idx_zombie].position += {pos_x, 0, pos_z};	
 			zombies[idx_zombie].effect_walking.root_position += {pos_x, 0, pos_z};	
 
@@ -485,4 +509,16 @@ void game::spawn_medicine(){
 		medicine_positions.push_back({pos_x, 0, pos_z});
 
 	}
+}
+
+int game::get_num_zombies_for_level(int _level){
+	return constants::RATIO_ZOMBIES_PER_LEVEL*_level;
+}
+
+int game::get_total_zombies_at_end_of_level(int _level){
+	return (_level*(constants::RATIO_ZOMBIES_PER_LEVEL + get_num_zombies_for_level(_level)))/2;
+}
+
+bool game::is_level_over(int _level){
+	return this_player.n_kills == get_total_zombies_at_end_of_level(_level);
 }
