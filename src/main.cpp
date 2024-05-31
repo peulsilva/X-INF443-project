@@ -37,9 +37,8 @@ std::string to_string_with_precision(const double value, const int precision = 2
 }
 
 // *************************** //
-// Custom game_ defined in "game_.hpp"
+// Custom game_ defined in "game.hpp"
 // *************************** //
-
 game game_;
 
 window_structure standard_window_initialization();
@@ -301,7 +300,6 @@ void animation_loop()
 		glfwSetWindowTitle(game_.window.glfw_window, title.c_str());
 	}
 
-	std::cout << "Starting frame" << std::endl;
 	imgui_create_frame();
 	ImGui::GetIO().FontGlobalScale = project::gui_scale;
 	// ImGui::Begin("GUI", NULL, ImGuiWindowFlags_NoDecoration);
@@ -316,22 +314,18 @@ void animation_loop()
 	display_gui_default();
 
 	game_.display_gui();
-	std::cout << "passed gui" << std::endl;
 
 	// Handle camera behavior in standard frame
 	game_.idle_frame();
-	std::cout << "passed idle frame" << std::endl;
 
 	// Call the display of the game_
 	game_.display_frame();
-	std::cout << "passed display frame" << std::endl;
 
 
 	// End of ImGui display and handle GLFW events
 	imgui_render_frame(game_.window.glfw_window);
 	glfwSwapBuffers(game_.window.glfw_window);
 	glfwPollEvents();
-	std::cout << "ending animation loop" << std::endl;
 }
 
 

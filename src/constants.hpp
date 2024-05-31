@@ -14,23 +14,23 @@ namespace constants {
     const int MAX_ZOMBIES_ON_SCREEN = 6;
     const int WORLD_SIZE = 100;
     const int ACESSIBLE_AREA = 0.95* WORLD_SIZE;
-    const int FOG_DEPTH = 25;
+    const int FOG_DEPTH = 1000;
 
     // spawns 
     const int MAX_SPAWN_WEAPONS = 3;
     const int MAX_SPAWN_MEDICINE = 3;
     const int MAX_DIST_SPAWN_ZOMBIES = 20;
     const float PROBABILITY_SPAWN_ZOMBIES = 1/200.;
-    const float PROBABILITY_SPAWN_WEAPONS = 1/500.;
-    const float PROBABILITY_SPAWN_MEDICINES = 1/500.;
+    const float PROBABILITY_SPAWN_WEAPONS = 1/1000.;
+    const float PROBABILITY_SPAWN_MEDICINES = 1/1000.;
 
     // minimap
     const int MINIMAP_WIDTH = 50;
-    const int MINIMAP_HEIGHT = 15;
+    const int MINIMAP_HEIGHT = 20;
 
     // levels
 
-    const int RATIO_ZOMBIES_PER_LEVEL = 3;
+    const int RATIO_ZOMBIES_PER_LEVEL = 5;
 
     // debug
 

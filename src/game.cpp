@@ -19,6 +19,7 @@ void game::initialize()
 	medicine_positions = {};
 	has_dead_zombie = false;
 	zombies = {};
+	
 
 
 	camera_control.initialize(inputs, window); // Give access to the inputs and window global state to the camera controler
@@ -31,9 +32,11 @@ void game::initialize()
 
 	// player
 	
-	this_player = player(vec3{0,0,0,}, camera_control, zombies);
+	this_player = player(vec3{0,0,0,}, camera_control, zombies, obstacles);
 
 	mini_map = minimap();
+	std::cout << "initialized minimap " << std::endl;
+	game_world.initialize(obstacles);
 
 	global_frame.initialize_data_on_gpu(mesh_primitive_frame());
 
@@ -51,14 +54,6 @@ void game::initialize()
 	// // auto struct_shape = mesh_load_file_obj_advanced(project::path + "assets/sponza/", "sponza.obj");
 	
 	// shapes = mesh_obj_advanced_loader::convert_to_mesh_drawable(struct_shape);
-
-
-	// terrain
-
-	ground.initialize_data_on_gpu(mesh_primitive_quadrangle({ -1.0f, 0.0f, -1.0f }, { -1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, -1.0f }));
-	ground.model.scaling = constants::WORLD_SIZE;
-	ground.model.translation = { 0.0f, 0.0f, 0.0f }; // No translation needed for y-axis up
-	ground.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/grass.jpg");
 
 
 	gui.display_frame = true;
@@ -90,8 +85,8 @@ void game::restart(){
 	has_dead_zombie = false;
 	game_over = false;
 	level = 1;
-
-	this_player = player(vec3{0,0,0,}, camera_control, zombies);
+	
+	this_player = player(vec3{0,0,0,}, camera_control, zombies, obstacles);
 
 	mini_map = minimap();
 
@@ -147,7 +142,7 @@ void game::display_frame()
 
 	glEnable(GL_DEPTH_TEST);
 
-	draw(ground, environment);
+	game_world.draw(environment, gui.display_wireframe);
 
 	for (auto& [w, pos] : weapons){
 		w.draw_on_scene(environment, pos);
@@ -158,9 +153,6 @@ void game::display_frame()
 		medicines[i].draw(environment, gui.display_wireframe);
 	}
 
-
-	if (gui.display_wireframe)
-		draw_wireframe(ground, environment);
 
 	animate_characters();
 
@@ -331,20 +323,6 @@ void game::animate_characters(){
 		this_zombie.move(this_player.position, zombies);
 	}
 
-	// ********************************** //
-	// Apply effects on the skeleton
-	// ********************************** //
-
-	// Apply the walk effect if activated
-
-	// zombies[current_active_zombie].character.animated_model.apply_transformation({0,1,0});
-	// Apply the head rotation effect if activated
-	// if(gui.rotate_head_effect_active) {
-	// 	for(auto& entry_character : characters) {
-	// 		effect_rotate_head_toward_objective_position(entry_character.second.animated_model.skeleton, 10, camera_control.camera_model.position());
-	// 	}
-	// }
-
 
 	// ********************************** //
 	// Compute Skinning deformation
@@ -386,15 +364,6 @@ void game::animate_characters(){
 				draw_wireframe(drawable, environment);
 			}
 		}
-
-		// Display skeleton
-		// if(gui.display_skeleton) {
-		// 	character.sk_drawable.update(animated_model.skeleton);
-		// 	character.sk_drawable.display_joint_frame = gui.display_skeleton_joint_frame;
-		// 	character.sk_drawable.display_joint_sphere = gui.display_skeleton_joint_sphere;
-		// 	character.sk_drawable.display_segments = gui.display_skeleton_bone;
-		// 	draw(character.sk_drawable, environment);
-		// }
 
 	}
 }
@@ -445,9 +414,10 @@ void game::spawn_zombies(){
 				zombies[idx_zombie]= base_zombie;
 				zombies[idx_zombie].name= idx_zombie;
 				zombies[idx_zombie].show = true;
+				zombies[idx_zombie].health += level*10;
 				zombies[idx_zombie].position += {pos_x, 0, pos_z};	
 				zombies[idx_zombie].effect_walking.root_position += {pos_x, 0, pos_z};	
-				zombies[idx_zombie].is_running = true;
+				zombies[idx_zombie].is_running = level >=3;
 			}
 			
 			has_dead_zombie = false;
@@ -461,7 +431,7 @@ void game::spawn_zombies(){
 			zombies[idx_zombie].position += {pos_x, 0, pos_z};	
 			zombies[idx_zombie].effect_walking.root_position += {pos_x, 0, pos_z};	
 
-			zombies[idx_zombie].is_running = true;
+			zombies[idx_zombie].is_running = level >=3 ;
 		}
 	}
 }

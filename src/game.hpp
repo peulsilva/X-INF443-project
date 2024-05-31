@@ -10,6 +10,7 @@
 #include "medicine.hpp"
 #include "animated_character/animated_character.hpp"
 #include "effects/effects.hpp"
+#include "world.hpp"
 
 using cgp::mesh_drawable;
 
@@ -47,6 +48,9 @@ class game : cgp::scene_inputs_generic {
 	camera_controller camera_control;
 
 	std::unordered_map<std::string, zombie> zombies;
+	std::unordered_map<std::string, vec3> obstacles = {
+		// {"house", {10,0,10}}
+	};;
 
 	std::unordered_map<weapon_type, weapon> base_weapons;
 	zombie base_zombie;
@@ -81,7 +85,7 @@ class game : cgp::scene_inputs_generic {
 
 	int zombies_count = 0;
 
-	mesh_drawable ground;
+	world game_world;
 	mesh_drawable cylinder;
 	skybox_drawable skybox;
 

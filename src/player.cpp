@@ -13,19 +13,19 @@ using namespace cgp;
 player::player(
     vec3 _position, 
     camera_controller_first_person_euler& _camera,
-    std::unordered_map<std::string, zombie>& _zombies
+    std::unordered_map<std::string, zombie>& _zombies,
+    std::unordered_map<std::string, vec3>& obstacles
 ){
     
-    curr_weapon = weapon(handgun);
+    curr_weapon = weapon(rifle);
 
     is_aiming = false;
-
-    
 
     velocity = constants::MAX_VELOCITY;
     player_direction = {0,0,0};
 
     zombies = &_zombies;
+    obstacle_positions = obstacles;
 
     position = _position;
     camera = &_camera;
@@ -94,6 +94,8 @@ void player::move(){
     }
 
     direction = collide_with_zombie(direction);
+    for (auto [n,obstacle] : obstacle_positions)
+        direction = collide_with_object(obstacle, direction);
 
     if (std::abs(position.x + direction.x) >= constants::ACESSIBLE_AREA)
         direction.x = 0;
@@ -123,6 +125,8 @@ void player::draw(
         is_aiming
     );
 }
+
+
 
 void player::handle_mouse_click(){
     auto& inputs = camera->inputs;
@@ -200,6 +204,18 @@ vec3 player::collide_with_zombie(vec3 moving_direction){
     }
     return moving_direction;
 }
+
+vec3 player::collide_with_object(vec3 obj_position, vec3 moving_direction){
+    vec3 d_ab = obj_position - position;
+
+    if (cgp::abs(d_ab.x) < 7 && cgp::abs(d_ab.z ) < 8){
+        moving_direction = restrict_movement(obj_position, moving_direction);;
+        
+    }
+
+    return moving_direction;
+}
+
 
 void player::take_hit(){
 

@@ -8,7 +8,7 @@ zombie::zombie(vec3 _position, std::string _name){
 	name = _name;
     position = _position;
 
-    character = load_character_zombie();
+    character = load_character_zombie(1);
 
 	character.set_current_animation("Walk");
 	speed = constants::ENEMY_SPEED_WALKING;	
@@ -24,7 +24,9 @@ zombie::zombie(vec3 _position, std::string _name, bool _show){
 	show = false;
 
 	speed = constants::ENEMY_SPEED_WALKING;
-    character = load_character_zombie();
+    character = load_character_zombie(1);
+
+	std::cout << "loaded zombie" << std::endl;
 	character.set_current_animation("Walk");
     effect_walking.root_position = position + vec3{0,0.9,0};
 	

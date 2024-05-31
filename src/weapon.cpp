@@ -18,6 +18,7 @@ weapon::weapon(weapon_type _type){
         object.initialize_data_on_gpu(
             mesh_load_file_obj("assets/Ak_47/Ak-47.obj")
         );
+        
 
         damage = 50;
 

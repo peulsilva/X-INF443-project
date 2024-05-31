@@ -37,10 +37,11 @@ class player{
         vec3 camera_position;
 
         std::unordered_map<std::string, zombie>* zombies;
+        std::unordered_map<std::string, vec3> obstacle_positions;
 
         bool is_aiming;
 
-        player(vec3 _position, camera_controller_first_person_euler& _camera, std::unordered_map<std::string, zombie>& _zombies);
+        player(vec3 _position, camera_controller_first_person_euler& _camera, std::unordered_map<std::string, zombie>& _zombies, std::unordered_map<std::string, vec3>& obstacles);
 
         player();
 
@@ -55,6 +56,7 @@ class player{
         vec3 collide_with_zombie(vec3 moving_direction);
 
         vec3 restrict_movement(vec3 zombie_pos, vec3 moving_direction);
+        vec3 collide_with_object(vec3 house_pos, vec3 moving_direction);
 
         void set_fps(int _fps);
 
