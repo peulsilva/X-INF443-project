@@ -208,9 +208,8 @@ vec3 player::collide_with_zombie(vec3 moving_direction){
 vec3 player::collide_with_object(vec3 obj_position, vec3 moving_direction){
     vec3 d_ab = obj_position - position;
 
-    if (cgp::abs(d_ab.x) < 7 && cgp::abs(d_ab.z ) < 8){
-        moving_direction = restrict_movement(obj_position, moving_direction);;
-        
+    if (norm(d_ab) < 1){
+        moving_direction = restrict_movement(obj_position, moving_direction);
     }
 
     return moving_direction;

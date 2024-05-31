@@ -17,30 +17,71 @@ void world::initialize(std::unordered_map<std::string, vec3>& obstacle_positions
 	);
 	ground.model.scaling = constants::WORLD_SIZE;
 
-    // house.initialize_data_on_gpu(
-    //     mesh_load_file_obj("assets/world/old house.obj")
-    // );
-    // house.model.rotation = rotation_transform::from_frame_transform(
-    //     {0,1,0},
-    //     {0,0,1},
-    //     {0,0,1},
-    //     {0,1,0}
-    // );
-    // house_position = obstacle_positions["house"];
+    mesh tree_mesh = create_tree();
+	tree.initialize_data_on_gpu(tree_mesh);
+    tree.model.rotation = rotation_transform::from_frame_transform(
+        {0,1,0},
+        {0,0,1},
+        {0,0,1},
+        {0,1,0}
+    );
     
-    // house.texture.load_and_initialize_texture_2d_on_gpu("assets/world/SAN_RUMAHGEN05.png");
-    // house.model.translation = house_position;
+    std::vector<double> scales = {1.7, 2, 3, 2.6, 2.8, 3.4, 4, 5.2};
+    int idx = 0;
+    for (auto [name, pos]: obstacle_positions){
+        idx = (idx+1)%scales.size(); 
+        if (name.substr(0, 4).compare("tree") == 0){
+            trees.push_back({pos, scales[idx]});
+        }
+    }
+
+    rock.initialize_data_on_gpu(
+        mesh_load_file_obj("assets/world/rock4.obj")
+    );
+    rock.texture.load_and_initialize_texture_2d_on_gpu(
+        "assets/world/texture2.png"
+    );
+
+    scales = {1};
+    idx = 0;
+    for (auto [name, pos]: obstacle_positions){
+        idx = (idx+1)%scales.size(); 
+        if (name.substr(0, 4).compare("rock") == 0){
+            pos.y -= 0.4;
+            rocks.push_back({pos, scales[idx]});
+        }
+    }
 }
 
 void world::draw(const environment_structure& env, bool display_wireframe){
     if (display_wireframe){
         cgp::draw_wireframe(ground,env);
-        cgp::draw_wireframe(house, env);
+
+        for (auto& [pos, size]: trees){
+            tree.model.translation = pos;
+            tree.model.scaling = size;
+            cgp::draw_wireframe(tree, env);
+        }
+
+        for (auto& [pos, size]: rocks){
+            rock.model.translation = pos;
+            rock.model.scaling = size;
+            cgp::draw_wireframe(rock, env);
+        }
     }
         
     else{
+        for (auto& [pos, size]: trees){
+            tree.model.translation = pos;
+            tree.model.scaling = size;
+            cgp::draw(tree, env);    
+        }
+        for (auto& [pos, size]: rocks){
+            rock.model.translation = pos;
+            rock.model.scaling = size;
+            cgp::draw(rock, env);
+        }
         cgp::draw(ground, env);
-        cgp::draw(house, env);    
     }
 }
 

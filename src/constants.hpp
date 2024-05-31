@@ -14,7 +14,7 @@ namespace constants {
     const int MAX_ZOMBIES_ON_SCREEN = 6;
     const int WORLD_SIZE = 100;
     const int ACESSIBLE_AREA = 0.95* WORLD_SIZE;
-    const int FOG_DEPTH = 1000;
+    const int FOG_DEPTH = 20;
 
     // spawns 
     const int MAX_SPAWN_WEAPONS = 3;

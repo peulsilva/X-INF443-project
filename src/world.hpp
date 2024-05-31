@@ -4,13 +4,17 @@
 #include "environment.hpp"
 #include "unordered_map"
 #include "utils.hpp"
+#include "tree.hpp"
 
 using namespace cgp;
 class world{
     public :
         mesh_drawable ground;
-        mesh_drawable house;
-        vec3 house_position;
+        mesh_drawable tree;
+        mesh_drawable rock;
+        std::vector<std::pair<vec3, int>> trees; // position, size
+        std::vector<std::pair<vec3, int>> rocks; // position, size
+
         void initialize(std::unordered_map<std::string, vec3>& obstacle_positions);
 
         void draw(const environment_structure& env, bool display_wireframe);
