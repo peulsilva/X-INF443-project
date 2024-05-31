@@ -25,8 +25,8 @@ void game::initialize()
 	camera_control.initialize(inputs, window); // Give access to the inputs and window global state to the camera controler
 	camera_control.set_rotation_axis_y();
 
-	environment.uniform_generic.uniform_vec3["fog_color"] = 0.3*vec3{1,1,1};
-	environment.background_color = 0.3*vec3{1,1,1};
+	environment.uniform_generic.uniform_vec3["fog_color"] = constants::FOG_COLOR;
+	environment.background_color = constants::FOG_COLOR;
 	environment.uniform_generic.uniform_int["fog_depth"] = constants::FOG_DEPTH;
 	display_info();
 
@@ -39,6 +39,7 @@ void game::initialize()
 	game_world.initialize(obstacles);
 
 	global_frame.initialize_data_on_gpu(mesh_primitive_frame());
+	global_frame.model.translation = obstacles["house"]; //- vec3{3.5,0,7.2};
 
 	// // skybox
 
@@ -111,6 +112,7 @@ void game::display_frame()
 {
 	// Set the light to the current position of the camera
 	environment.light = camera_control.camera_model.position();
+	environment.uniform_generic.uniform_vec3["flashlight_direction"] = camera_control.camera_model.front();
 	this_player.set_fps(std::max(fps_counter->fps, 20));
 
 	new_level_count++;

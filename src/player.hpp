@@ -56,7 +56,7 @@ class player{
         vec3 collide_with_zombie(vec3 moving_direction);
 
         vec3 restrict_movement(vec3 zombie_pos, vec3 moving_direction);
-        vec3 collide_with_object(vec3 house_pos, vec3 moving_direction);
+        vec3 collide_with_object(vec3 house_pos, vec3 moving_direction, std::string obj_name);
 
         void set_fps(int _fps);
 

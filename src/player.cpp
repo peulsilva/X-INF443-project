@@ -17,7 +17,7 @@ player::player(
     std::unordered_map<std::string, vec3>& obstacles
 ){
     
-    curr_weapon = weapon(rifle);
+    curr_weapon = weapon(handgun);
 
     is_aiming = false;
 
@@ -95,13 +95,19 @@ void player::move(){
 
     direction = collide_with_zombie(direction);
     for (auto [n,obstacle] : obstacle_positions)
-        direction = collide_with_object(obstacle, direction);
+        direction = collide_with_object(obstacle, direction, n);
 
     if (std::abs(position.x + direction.x) >= constants::ACESSIBLE_AREA)
         direction.x = 0;
 
     if (std::abs(position.z + direction.z) >= constants::ACESSIBLE_AREA)
         direction.z = 0;
+
+    if (std::abs(obstacle_positions["house"].z - position.z - direction.z) <= 8 && std::abs(obstacle_positions["house"].x - position.x) <= 4)
+        direction.z = 0;
+
+    if (std::abs(obstacle_positions["house"].x - position.x - direction.x) <= 4 && std::abs(obstacle_positions["house"].z - position.z) <= 8)
+        direction.x = 0;
 
     position += direction;
     camera_position+= direction;
@@ -183,7 +189,7 @@ vec3 player::restrict_movement(vec3 zombie_pos, vec3 moving_direction){
         return moving_direction;
 
     vec3 projection = cos_angle* v_ab;
-
+    
     return moving_direction - projection;
 }
 
@@ -202,11 +208,41 @@ vec3 player::collide_with_zombie(vec3 moving_direction){
         }
         
     }
+    
+
+    
     return moving_direction;
 }
 
-vec3 player::collide_with_object(vec3 obj_position, vec3 moving_direction){
+vec3 player::collide_with_object(vec3 obj_position, vec3 moving_direction, std::string obj_name){
     vec3 d_ab = obj_position - position;
+    if (obj_name.compare("car") == 0){
+        if (norm(d_ab) < 3){
+            moving_direction = restrict_movement(obj_position, moving_direction);
+        }
+        return moving_direction;
+    }
+
+    if (obj_name.substr(0,5).compare("house") == 0){
+        if (pow(d_ab.x/6., 100) + pow(d_ab.z/9. ,100) < 1){
+
+            
+
+            double prev_norm = norm(moving_direction);
+            moving_direction = restrict_movement(obj_position, moving_direction);
+
+            // moving_direction = moving_direction * prev_norm;
+        }
+        return moving_direction;
+    }
+
+
+    if (obj_name.substr(0,4).compare("rock") == 0){
+        if (norm(d_ab ) < 0.6){
+            moving_direction = restrict_movement(obj_position, moving_direction);
+        }
+        return moving_direction;
+    }
 
     if (norm(d_ab) < 1){
         moving_direction = restrict_movement(obj_position, moving_direction);

@@ -12,6 +12,8 @@ class world{
         mesh_drawable ground;
         mesh_drawable tree;
         mesh_drawable rock;
+        mesh_drawable car;
+        mesh_drawable house;
         std::vector<std::pair<vec3, int>> trees; // position, size
         std::vector<std::pair<vec3, int>> rocks; // position, size
 
