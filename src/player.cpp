@@ -109,6 +109,8 @@ void player::move(){
     if (std::abs(obstacle_positions["house"].x - position.x - direction.x) <= 4 && std::abs(obstacle_positions["house"].z - position.z) <= 8)
         direction.x = 0;
 
+    if (norm(direction) > 0)
+        direction = direction/norm(direction)*delta_s;
     position += direction;
     camera_position+= direction;
 
@@ -216,38 +218,32 @@ vec3 player::collide_with_zombie(vec3 moving_direction){
 
 vec3 player::collide_with_object(vec3 obj_position, vec3 moving_direction, std::string obj_name){
     vec3 d_ab = obj_position - position;
+    double prev_norm = norm(moving_direction);
     if (obj_name.compare("car") == 0){
         if (norm(d_ab) < 3){
             moving_direction = restrict_movement(obj_position, moving_direction);
         }
-        return moving_direction;
     }
 
-    if (obj_name.substr(0,5).compare("house") == 0){
+    else if (obj_name.substr(0,5).compare("house") == 0){
         if (pow(d_ab.x/6., 100) + pow(d_ab.z/9. ,100) < 1){
-
             
-
-            double prev_norm = norm(moving_direction);
             moving_direction = restrict_movement(obj_position, moving_direction);
 
-            // moving_direction = moving_direction * prev_norm;
         }
-        return moving_direction;
     }
 
 
-    if (obj_name.substr(0,4).compare("rock") == 0){
+    else if (obj_name.substr(0,4).compare("rock") == 0){
         if (norm(d_ab ) < 0.6){
             moving_direction = restrict_movement(obj_position, moving_direction);
         }
-        return moving_direction;
     }
 
-    if (norm(d_ab) < 1){
+    else if (norm(d_ab) < 1){
         moving_direction = restrict_movement(obj_position, moving_direction);
     }
-
+    
     return moving_direction;
 }
 
@@ -322,6 +318,7 @@ void player::heal(
 void player::set_fps(int _fps){
     fps = _fps;
     hit_timeout = 1.6*fps;
+    velocity = constants::MAX_VELOCITY * pow(60/((double)fps), 1/2.);
 
     curr_weapon.set_fps(fps);
 }

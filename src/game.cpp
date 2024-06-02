@@ -41,14 +41,7 @@ void game::initialize()
 	global_frame.initialize_data_on_gpu(mesh_primitive_frame());
 	global_frame.model.translation = obstacles["house"]; //- vec3{3.5,0,7.2};
 
-	// // skybox
-
-	// image_structure image_skybox = image_load_file("assets/skybox.jpg");
-
-	// std::vector<image_structure> image_grid = image_split_grid(image_skybox, 4, 3);
-
-	// skybox.initialize_data_on_gpu();
-	// skybox.texture.initialize_cubemap_on_gpu(image_grid[1], image_grid[7], image_grid[5], image_grid[3], image_grid[10], image_grid[4]);
+	// skybox
 
 
 	// auto struct_shape = mesh_load_file_obj_advanced(project::path + "assets/worlds/holodeck/", "holodeck.obj");
@@ -59,7 +52,7 @@ void game::initialize()
 
 	gui.display_frame = true;
 
-	base_zombie = zombie({0,0,0}, "0", false);
+	base_zombie = zombie({0,0,0}, "0", false, obstacles);
 
 	base_weapons = {
 		{rifle, weapon(rifle)},
@@ -162,7 +155,6 @@ void game::display_frame()
     glClear(GL_DEPTH_BUFFER_BIT);
 	this_player.draw(environment, gui.display_wireframe);
 
-	
 	
 }
 
@@ -298,7 +290,7 @@ void game::animate_characters(){
 		character_structure& character = this_zombie.character;
 		effect_transition_structure& transition = effect_transition[name];
 
-		if (norm(this_zombie.position - this_player.position) > constants::MAX_DIST_SPAWN_ZOMBIES){
+		if (norm(this_zombie.position - this_player.position) > 100){
 			this_zombie.move(this_player.position, zombies);
 			continue;
 		}
@@ -330,7 +322,7 @@ void game::animate_characters(){
 	// Compute Skinning deformation
 	// ********************************** //
 	for(auto& [name, zombie] : zombies) {
-		if (norm(zombie.position - this_player.position) > constants::MAX_DIST_SPAWN_ZOMBIES){
+		if (norm(zombie.position - this_player.position) > constants::MAX_DIST_SHOW_ZOMBIES){
 			continue;
 		}
 		animated_model_structure& animated_model = zombie.character.animated_model;
@@ -344,7 +336,7 @@ void game::animate_characters(){
 	// Display the surface and the skeletons
 	// ************************************** //
 	for(auto& [name, zombie] : zombies) {
-		if (norm(zombie.position - this_player.position) > constants::MAX_DIST_SPAWN_ZOMBIES){
+		if (norm(zombie.position - this_player.position) > constants::MAX_DIST_SHOW_ZOMBIES){
 			continue;
 		}
 		character_structure& character = zombie.character;
@@ -419,7 +411,7 @@ void game::spawn_zombies(){
 				zombies[idx_zombie].health += level*10;
 				zombies[idx_zombie].position += {pos_x, 0, pos_z};	
 				zombies[idx_zombie].effect_walking.root_position += {pos_x, 0, pos_z};	
-				zombies[idx_zombie].is_running = level >=3;
+				zombies[idx_zombie].is_running = level >=0;
 			}
 			
 			has_dead_zombie = false;
@@ -433,7 +425,7 @@ void game::spawn_zombies(){
 			zombies[idx_zombie].position += {pos_x, 0, pos_z};	
 			zombies[idx_zombie].effect_walking.root_position += {pos_x, 0, pos_z};	
 
-			zombies[idx_zombie].is_running = level >=3 ;
+			zombies[idx_zombie].is_running = level >=0 ;
 		}
 	}
 }

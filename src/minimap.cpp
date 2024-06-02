@@ -32,10 +32,10 @@ void minimap::update(int player_x, int player_z){
         int prev_scaled_z = (prev_player_z + constants::WORLD_SIZE) * width / (2*constants::WORLD_SIZE);
 
         prev_scaled_x = std::max(prev_scaled_x, 1);
-        prev_scaled_x = std::min(height - 1, prev_scaled_x);
+        prev_scaled_x = std::min(height - 2, prev_scaled_x);
 
         prev_scaled_z = std::max(prev_scaled_z, 1);
-        prev_scaled_z = std::min(width - 1, prev_scaled_z);
+        prev_scaled_z = std::min(width - 2, prev_scaled_z);
 
         map[prev_scaled_x][prev_scaled_z] = ' ';
     }
@@ -57,18 +57,7 @@ void minimap::update(int player_x, int player_z){
     scaled_z = std::max(scaled_z, 1);
     scaled_z = std::min(width - 2, scaled_z);
 
-    // verificar scaled_x e scaled_z
-    // if (prev_player_x > player_x)
-    //     map[scaled_x][scaled_z] = 'v';
-    // else if(prev_player_x < player_x)
-    //     map[scaled_x][scaled_z] = '^';
-    // else if(prev_player_z > player_z)
-    //     map[scaled_x][scaled_z] = '<';
-    // else if(prev_player_z > player_z)
-    //     map[scaled_x][scaled_z] = '>';
-    // else{
-    //     map[scaled_x][scaled_z] = dir;
-    // }
+
     
     map[scaled_x][scaled_z] = 'P';
     prev_player_x = player_x;

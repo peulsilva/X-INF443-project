@@ -4,11 +4,12 @@
 
 using namespace cgp;
 
-zombie::zombie(vec3 _position, std::string _name){
+zombie::zombie(vec3 _position, std::string _name, std::unordered_map<std::string, vec3>& obstacles){
 	name = _name;
     position = _position;
 
     character = load_character_zombie(1);
+	obstacle_positions = obstacles;
 
 	character.set_current_animation("Walk");
 	speed = constants::ENEMY_SPEED_WALKING;	
@@ -17,11 +18,12 @@ zombie::zombie(vec3 _position, std::string _name){
 	
 }
 
-zombie::zombie(vec3 _position, std::string _name, bool _show){
+zombie::zombie(vec3 _position, std::string _name, bool _show, std::unordered_map<std::string, vec3>& obstacles){
 	name = _name;
     position = _position;
 
 	show = false;
+	obstacle_positions = obstacles;
 
 	speed = constants::ENEMY_SPEED_WALKING;
     character = load_character_zombie(1);
@@ -170,15 +172,17 @@ void zombie::move(
 	forward_direction = vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));
 	vec3 delta_position = forward_direction * speed;
 
-	if (norm(position - player_position) > 20){
+	if (norm(position - player_position) > constants::MAX_DIST_SHOW_ZOMBIES){
 		effect_walking.root_position += delta_position;
 		position += delta_position;
 		return;
 	}
 	
 	delta_position = collide_with_player(player_position, delta_position);
-	
 	delta_position = collide_with_zombies(other_zombies, delta_position);	
+	for (auto& [name, obj_pos]: obstacle_positions){
+		delta_position = collide_with_object(obj_pos, delta_position, name);
+	}
 
 	rotation_transform r = rotation_axis_angle(vec3(0.0f, 1.0f, 0.0f), effect_walking.root_angle);
 	quaternion q = normalize(r.get_quaternion());
@@ -207,13 +211,6 @@ vec3 zombie::collide_with_player(vec3 player_position, vec3 walking_position){
 	}
 
 	return vec3{0,0,0};
-
-	// vec3 forward_direction = vec3(sin(effect_walking.root_angle), 0.0f, cos(effect_walking.root_angle));
-
-	// decompose in perpendicular direction
-
-	// vec3 proj = dot(forward_direction, d_AB)* forward_direction;
-
 }
 
 vec3 zombie::restrict_movement(vec3 other_zombie_pos, vec3 moving_direction){
@@ -241,4 +238,41 @@ vec3 zombie::collide_with_zombies(std::unordered_map<std::string, zombie> & all_
 		}
 	}
 	return walking_direction;
+}
+
+vec3 zombie::collide_with_object(vec3 obj_position, vec3 moving_direction, std::string obj_name){
+    vec3 d_ab = obj_position - position;
+    double prev_norm = norm(moving_direction);
+    if (obj_name.compare("car") == 0){
+        if (norm(d_ab) < 3.5){
+            moving_direction = restrict_movement(obj_position, moving_direction);
+        }
+    }
+
+    else if (obj_name.substr(0,5).compare("house") == 0){
+        if (pow(d_ab.x/6., 100) + pow(d_ab.z/9. ,100) < 1){
+            
+            moving_direction = restrict_movement(obj_position, moving_direction);
+
+        }
+    }
+
+
+    else if (obj_name.substr(0,4).compare("rock") == 0){
+        if (norm(d_ab ) < 1){
+            moving_direction = restrict_movement(obj_position, moving_direction);
+        }
+    }
+
+    else if (norm(d_ab) < 2){
+        moving_direction = restrict_movement(obj_position, moving_direction);
+    }
+
+	if (std::abs(obstacle_positions["house"].z - position.z - moving_direction.z) <= 8 && std::abs(obstacle_positions["house"].x - position.x) <= 4)
+        moving_direction.z = 0;
+
+    if (std::abs(obstacle_positions["house"].x - position.x - moving_direction.x) <= 4 && std::abs(obstacle_positions["house"].z - position.z) <= 8)
+        moving_direction.x = 0;
+    
+    return moving_direction;
 }

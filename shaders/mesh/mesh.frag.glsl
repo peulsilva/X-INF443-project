@@ -141,8 +141,8 @@ void main()
     color_shading *= intensity;
 
     // Fog
-    float alpha = min(1, length(camera_position - fragment.position) / fog_depth);
-    color_shading = (1 - alpha) * color_shading + alpha * fog_color;
+    // float alpha = min(1, length(camera_position - fragment.position) / fog_depth);
+    // color_shading = (1 - alpha) * color_shading + alpha * fog_color;
 
     // Output color, with the alpha component
     FragColor = vec4(color_shading, material.alpha * color_image_texture.a);
