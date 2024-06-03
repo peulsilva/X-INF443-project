@@ -15,6 +15,9 @@ namespace constants {
     const int MAX_ZOMBIES_ON_SCREEN = 1;
     const int WORLD_SIZE = 100;
     const int ACESSIBLE_AREA = 0.95* WORLD_SIZE;
+
+    // illumination
+    const float FLASHLIGHT_RADIUS = 5;
     const int FOG_DEPTH = 10000;
     const vec3 FOG_COLOR = 0.01*vec3{1,1,1};
 

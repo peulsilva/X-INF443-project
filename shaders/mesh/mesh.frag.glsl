@@ -39,7 +39,7 @@ uniform vec3 fog_color; // background color
 uniform int fog_depth;
 
 // Flashlight properties
- float flashlight_radius = 5; // radius of the flashlight effect
+uniform float flashlight_radius; // radius of the flashlight effect
 
 // Coefficients of phong illumination model
 struct phong_structure {

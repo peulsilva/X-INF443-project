@@ -28,6 +28,7 @@ void game::initialize()
 	environment.uniform_generic.uniform_vec3["fog_color"] = constants::FOG_COLOR;
 	environment.background_color = constants::FOG_COLOR;
 	environment.uniform_generic.uniform_int["fog_depth"] = constants::FOG_DEPTH;
+	environment.uniform_generic.uniform_float["flashlight_radius"] = constants::FLASHLIGHT_RADIUS;
 	display_info();
 
 	// player
