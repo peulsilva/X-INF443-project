@@ -233,12 +233,11 @@ void game::display_gui()
 	ImGui::Begin("minimap", NULL, 
 		ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground
 	);
-
 	mini_map.add_weapons(weapon_pos);
 	mini_map.add_medicine(medicine_positions);
 	mini_map.update(this_player.position.x, this_player.position.z);
 
-	ImGui::SetWindowSize(ImVec2{400, 800});
+	ImGui::SetWindowSize(ImVec2{600, 800});
 	ImGui::SetWindowPos({
 		0, 
 		window.screen_resolution_height*2/3.
@@ -412,7 +411,7 @@ void game::spawn_zombies(){
 				zombies[idx_zombie].health += level*10;
 				zombies[idx_zombie].position += {pos_x, 0, pos_z};	
 				zombies[idx_zombie].effect_walking.root_position += {pos_x, 0, pos_z};	
-				zombies[idx_zombie].is_running = level >=0;
+				zombies[idx_zombie].is_running = level >=2;
 			}
 			
 			has_dead_zombie = false;
@@ -426,7 +425,7 @@ void game::spawn_zombies(){
 			zombies[idx_zombie].position += {pos_x, 0, pos_z};	
 			zombies[idx_zombie].effect_walking.root_position += {pos_x, 0, pos_z};	
 
-			zombies[idx_zombie].is_running = level >=0 ;
+			zombies[idx_zombie].is_running = level >=2 ;
 		}
 	}
 }
@@ -440,8 +439,8 @@ void game::spawn_weapons(){
 
 	if (prob < constants::PROBABILITY_SPAWN_WEAPONS){
 
-		int pos_x = std::rand() % (2*constants::ACESSIBLE_AREA) - constants::ACESSIBLE_AREA;
-		int pos_z = std::rand() % (2*constants::ACESSIBLE_AREA) -constants::ACESSIBLE_AREA;
+		int pos_x = (std::rand() % (2*constants::ACESSIBLE_AREA)) - constants::ACESSIBLE_AREA;
+		int pos_z = (std::rand() % (2*constants::ACESSIBLE_AREA) )-constants::ACESSIBLE_AREA;
 
 		weapon_type random_weapon = weapon::choose_random_weapon();
 
@@ -462,8 +461,8 @@ void game::spawn_medicine(){
 
 	if (prob < constants::PROBABILITY_SPAWN_MEDICINES){
 
-		int pos_x = std::rand() % (2*constants::ACESSIBLE_AREA) - constants::ACESSIBLE_AREA;
-		int pos_z = std::rand() % (2*constants::ACESSIBLE_AREA) -constants::ACESSIBLE_AREA;
+		int pos_x = (std::rand() % (2*constants::ACESSIBLE_AREA)) - constants::ACESSIBLE_AREA;
+		int pos_z = (std::rand() % (2*constants::ACESSIBLE_AREA)) -constants::ACESSIBLE_AREA;
 	
 
 		medicine this_medicine = base_medicine;
@@ -477,11 +476,11 @@ void game::spawn_medicine(){
 }
 
 int game::get_num_zombies_for_level(int _level){
-	return constants::RATIO_ZOMBIES_PER_LEVEL*_level;
+	return constants::RATIO_ZOMBIES_PER_LEVEL;
 }
 
 int game::get_total_zombies_at_end_of_level(int _level){
-	return (_level*(constants::RATIO_ZOMBIES_PER_LEVEL + get_num_zombies_for_level(_level)))/2;
+	return constants::RATIO_ZOMBIES_PER_LEVEL*_level;
 }
 
 bool game::is_level_over(int _level){

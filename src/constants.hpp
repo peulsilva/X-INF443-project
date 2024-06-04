@@ -8,16 +8,16 @@ namespace constants {
 
     // speed
     const float STEP_SIZE = 0.1;
-    const float MAX_VELOCITY = 6;
+    const float MAX_VELOCITY = 4;
     const float ENEMY_SPEED_WALKING= 0.02;
     const float ENEMY_SPEED_RUNNING= 0.06;
     
-    const int MAX_ZOMBIES_ON_SCREEN = 1;
+    const int MAX_ZOMBIES_ON_SCREEN = 6;
     const int WORLD_SIZE = 100;
     const int ACESSIBLE_AREA = 0.95* WORLD_SIZE;
 
     // illumination
-    const float FLASHLIGHT_RADIUS = 5;
+    const float FLASHLIGHT_RADIUS = 10;
     const int FOG_DEPTH = 10000;
     const vec3 FOG_COLOR = 0.01*vec3{1,1,1};
 
@@ -28,12 +28,12 @@ namespace constants {
     const int MAX_DIST_SPAWN_ZOMBIES = 20;
     const int MAX_DIST_SHOW_ZOMBIES = 100;
     const float PROBABILITY_SPAWN_ZOMBIES = 1/200.;
-    const float PROBABILITY_SPAWN_WEAPONS = 1/1000.;
+    const float PROBABILITY_SPAWN_WEAPONS = 1/999.;
     const float PROBABILITY_SPAWN_MEDICINES = 1/1000.;
 
     // minimap
-    const int MINIMAP_WIDTH = 50;
-    const int MINIMAP_HEIGHT = 25;
+    const int MINIMAP_WIDTH = 60;
+    const int MINIMAP_HEIGHT = 30;
 
     // levels
 

@@ -242,6 +242,7 @@ void weapon::draw(
 
     else
         cgp::draw(object, env);
+
 }
 
 void weapon::draw_on_scene(
@@ -302,6 +303,11 @@ void weapon::draw_on_scene(
         object.model.translation = {position.x, 0.8, position.z};
         object.model.set_scaling(1e-1f);
     }
+    object.material.phong.specular_exponent = 100;
+    object.material.phong.specular = 1;
+    object.material.phong.ambient = 0.4;
+    object.material.phong.diffuse = 1;
+
 
     cgp::draw(object, env);
 }

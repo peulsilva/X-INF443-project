@@ -270,6 +270,10 @@ void player::get_weapon(
     for (auto& [w, pos] : weapons){
         if (norm(pos - position) < 2){
             is_near_any = true;
+            w.object.material.phong.specular_exponent = 64;
+            w.object.material.phong.specular = 0.3;
+            w.object.material.phong.ambient = 0.3;
+            w.object.material.phong.diffuse = 0.6;
             curr_weapon = w;
             break;
         }
@@ -318,7 +322,7 @@ void player::heal(
 void player::set_fps(int _fps){
     fps = _fps;
     hit_timeout = 1.6*fps;
-    velocity = constants::MAX_VELOCITY * pow(60/((double)fps), 1/2.);
+    // velocity = constants::MAX_VELOCITY * pow(60/((double)fps), 1/2.);
 
     curr_weapon.set_fps(fps);
 }

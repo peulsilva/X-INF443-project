@@ -79,13 +79,14 @@ void main_menu(){
 	game_.inputs.mouse.on_gui = ImGui::GetIO().WantCaptureMouse;
 	game_.inputs.time_interval = time_interval;
 
-	ImVec2 window_size(500, 600);
+	ImVec2 window_size(1000, 600);
 	ImGui::Begin("X-zombies", NULL, 
 		ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground
 	);
-	ImGui::Text("		 --------------------------");
-	ImGui::Text("		 | Welcome to X-zombies |");
-	ImGui::Text("		 --------------------------");
+	ImGui::SetWindowFontScale(2);
+	ImGui::Text("--------------------------");
+	ImGui::Text("| Welcome to X-zombies |");
+	ImGui::Text("--------------------------");
 	ImGui::Text(" ");
 	ImGui::Text("To move: A W S D");
 	ImGui::Text(" ");
@@ -139,12 +140,12 @@ void game_over_screen(){
 	game_.inputs.mouse.on_gui = ImGui::GetIO().WantCaptureMouse;
 	game_.inputs.time_interval = time_interval;
 
-	ImVec2 window_size(500, 600);
+	ImVec2 window_size(1000, 600);
 	ImGui::Begin("restart", NULL, 
 		ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground
 	);
 
-	// ImGui::SetWindowFontScale(2);
+	ImGui::SetWindowFontScale(2);
 	ImGui::Text("--------------------------");
 	ImGui::Text("You are dead");
 	std::string round_stat = "You arrived at round " + std::to_string(game_.level); 
