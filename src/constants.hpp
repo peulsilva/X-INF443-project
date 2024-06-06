@@ -12,7 +12,7 @@ namespace constants {
     const float ENEMY_SPEED_WALKING= 0.02;
     const float ENEMY_SPEED_RUNNING= 0.06;
     
-    const int MAX_ZOMBIES_ON_SCREEN = 6;
+    const int MAX_ZOMBIES_ON_SCREEN = 4;
     const int WORLD_SIZE = 100;
     const int ACESSIBLE_AREA = 0.95* WORLD_SIZE;
 
@@ -32,8 +32,8 @@ namespace constants {
     const float PROBABILITY_SPAWN_MEDICINES = 1/1000.;
 
     // minimap
-    const int MINIMAP_WIDTH = 60;
-    const int MINIMAP_HEIGHT = 30;
+    const int MINIMAP_WIDTH = 50;
+    const int MINIMAP_HEIGHT = 25;
 
     // levels
 

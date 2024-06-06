@@ -92,7 +92,7 @@ void main_menu(){
 	ImGui::Text(" ");
 	ImGui::Text("To shoot: Right mouse button");
 	ImGui::Text("To aim: Left mouse button");
-	ImGui::Text("To reload your weppon: R");
+	ImGui::Text("To reload your weapon: R");
 	ImGui::Text(" ");
 	ImGui::Text("To access the menu: P");
 	ImGui::Text("If you are out of ammo, you can look for other weapons in the map");
